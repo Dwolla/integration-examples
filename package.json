@@ -1,0 +1,19 @@
+{
+    "name": "integration-examples",
+    "version": "1.0.0",
+    "license": "MIT",
+    "author": "Dwolla, Inc.",
+    "private": true,
+    "scripts": {
+        "install:all": "pnpm -r install",
+        "plaid:dev": "pnpm -r --filter \"@example/plaid-funding-source\" dev"
+    },
+    "devDependencies": {
+        "eslint": "^8.21.0",
+        "eslint-config-next": "^12.2.3",
+        "eslint-config-prettier": "^8.5.0",
+        "next": "^12.2.3",
+        "prettier": "^2.7.1",
+        "typescript": "^4.7.4"
+    }
+}
