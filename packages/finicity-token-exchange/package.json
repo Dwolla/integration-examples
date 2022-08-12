@@ -1,0 +1,32 @@
+{
+    "name": "@example/finicity-token-exchange",
+    "version": "1.0.0",
+    "description": "Dwolla integration example that uses the Secure Token Exchange to verify a customer's bank account using Finicity",
+    "license": "MIT",
+    "author": "Dwolla, Inc.",
+    "scripts": {
+        "build": "next build",
+        "checks": "../../node_modules/.bin/tsc --pretty --noEmit && pnpm lint && pnpm prettier:check",
+        "dev": "next dev",
+        "format": "../../node_modules/.bin/prettier --config ../../.prettierrc.json --write \"src/**/*.+(ts|tsx)\"",
+        "lint": "next lint --config ../../.eslintrc.json",
+        "prettier:check": "../../node_modules/.bin/prettier --check --config ../../.prettierrc.json \"src/**/*.+(ts|tsx)\"",
+        "start": "next start"
+    },
+    "devDependencies": {
+        "@types/node": "18.7.1",
+        "@types/react": "18.0.17",
+        "@types/react-dom": "18.0.6"
+    },
+    "dependencies": {
+        "@finicity/node-sdk": "link:sdks/finicity",
+        "axios": "^0.27.2",
+        "core-js": "^3.24.1",
+        "dwolla-v2": "4.0.0-ts-alpha.0",
+        "form-data": "^4.0.0",
+        "next": "12.2.4",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-script-hook": "^1.7.0"
+    }
+}
