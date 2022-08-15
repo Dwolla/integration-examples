@@ -4,7 +4,7 @@ This repository contains end-to-end example applications that showcase how Dwoll
 
 Each application makes use of the latest technologies by building itself on top of NextJS/React and TypeScript, as well as demonstrating best practices regarding error handling, token management, and more.
 
-## Before Starting
+## Getting Started
 
 Before getting started, please note that many of our example apps share common dependencies—e.g., ESLint, Prettier, and TypeScript. As such, their configurations are held within the root project, while each app references the root `integration-examples` project instead of creating its own. This means that before you can use any of the example applications, you must first run `pnpm install` in the root project first.
 
