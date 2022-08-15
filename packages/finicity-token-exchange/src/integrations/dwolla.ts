@@ -22,7 +22,7 @@ interface WithCustomerId {
 }
 
 const client = new Client({
-    environment: process.env.DWOLLA_ENV as "production" | "sandbox",
+    environment: (process.env.DWOLLA_ENV as string).toLowerCase() as "production" | "sandbox",
     key: process.env.DWOLLA_KEY as string,
     secret: process.env.DWOLLA_SECRET as string
 });
