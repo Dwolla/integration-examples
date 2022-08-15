@@ -12,6 +12,6 @@ Before getting started, please note that many of our example apps share common d
 
 You can find an exhaustive list of all example apps that this repository contains below.
 
-To get more information on installing and running a specific app, please click on the apps' name, which will redirect to its respective README.
+To get more information on installing and running a specific app, please click on its name, which will redirect you to the respective README.
 
 * [Plaid](https://github.com/Dwolla/integration-examples/tree/main/packages/plaid-funding-source#readme)
