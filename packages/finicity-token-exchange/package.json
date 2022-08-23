@@ -14,7 +14,7 @@
         "start": "next start"
     },
     "devDependencies": {
-        "@types/node": "18.7.1",
+        "@types/node": "18.7.11",
         "@types/react": "18.0.17",
         "@types/react-dom": "18.0.6"
     },
@@ -24,7 +24,7 @@
         "core-js": "^3.24.1",
         "dwolla-v2": "4.0.0-ts-alpha.0",
         "form-data": "^4.0.0",
-        "next": "12.2.4",
+        "next": "^12.2.5",
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "react-script-hook": "^1.7.0"
