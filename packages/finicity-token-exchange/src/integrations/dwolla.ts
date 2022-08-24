@@ -2,7 +2,7 @@ import { Client } from "dwolla-v2";
 
 export interface CreateExchangeOptions extends WithCustomerId {
     exchangePartnerId: string;
-    finicityReceipt: any;
+    finicityReceipt: unknown;
 }
 
 export interface CreateFundingSourceOptions extends WithCustomerId {
@@ -76,7 +76,7 @@ export async function createUnverifiedCustomer(options: CreateUnverifiedCustomer
  */
 export async function getExchangeId(): Promise<string> {
     const response = await client.get("/exchange-partners");
-    const partnersList = (response as any).body._embedded["exchange-partners"];
-    const finicityPartner = partnersList.filter((obj: any) => obj.name === "Finicity")[0];
+    const partnersList = response.body._embedded["exchange-partners"];
+    const finicityPartner = partnersList.filter((obj: { name: string }) => obj.name === "Finicity")[0];
     return finicityPartner.exchangePartnerId;
 }

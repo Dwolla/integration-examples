@@ -1,6 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { assertRequestMethod, assertValidBody, tryWithResponse } from "../../../utils";
-import { createExchange, CreateExchangeOptions } from "../../../integrations/dwolla";
+import type { CreateExchangeOptions } from "../../../integrations/dwolla";
+import { createExchange } from "../../../integrations/dwolla";
 
 /**
  * POST: Creates an exchange resource for a customer

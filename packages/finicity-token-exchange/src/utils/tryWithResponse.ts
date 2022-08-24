@@ -1,4 +1,4 @@
-import { NextApiResponse } from "next";
+import type { NextApiResponse } from "next";
 
 /**
  * Wraps a closure in a `try`/`catch`, and if the function panics, print the stacktrace, inform the user, and end the session.
