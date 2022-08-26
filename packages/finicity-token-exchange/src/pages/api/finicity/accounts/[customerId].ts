@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { getCustomerAccounts, GetCustomerAccountsOptions } from "../../../../integrations/finicity";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { GetCustomerAccountsOptions } from "../../../../integrations/finicity";
+import { getCustomerAccounts } from "../../../../integrations/finicity";
 import { assertRequestMethod, tryWithResponse } from "../../../../utils";
 
 /**

@@ -1,9 +1,11 @@
-import { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
+import type { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { ParsedUrlQuery } from "querystring";
-import { CreateExchangeOptions, CreateFundingSourceOptions, getExchangeId } from "../integrations/dwolla";
-import { ChangeEvent, FormEvent, useState } from "react";
+import type { ParsedUrlQuery } from "querystring";
+import type { ChangeEvent, FormEvent } from "react";
+import { useState } from "react";
+import type { CreateExchangeOptions, CreateFundingSourceOptions } from "../integrations/dwolla";
+import { getExchangeId } from "../integrations/dwolla";
 import { getMissingKeys } from "../utils";
 
 interface Props {
@@ -28,7 +30,7 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
      * Calls our API to create a Dwolla exchange.
      * @returns - The location of the new exchange resource
      */
-    async function createExchange(customerId: string): Promise<string | null> {
+    async function createExchange(): Promise<string | null> {
         const response = await fetch("/api/dwolla/exchanges", {
             method: "POST",
             headers: {
@@ -76,7 +78,7 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
         event.preventDefault();
         if (!isFormValid()) return alert("Please fill out all of the required form fields.");
 
-        const exchangeUrl = await createExchange(dwollaCustomerId);
+        const exchangeUrl = await createExchange();
         if (!exchangeUrl) return alert("No exchange URL was returned from createExchange().");
 
         const fundingSourceUrl = await createFundingSource(exchangeUrl);
@@ -137,7 +139,7 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
 /**
  * When the page loads, fetch Finicity's exchange ID from Dwolla and pass it as a prop.
  */
-export const getServerSideProps: GetServerSideProps = async (context): Promise<GetServerSidePropsResult<Props>> => {
+export const getServerSideProps: GetServerSideProps = async (): Promise<GetServerSidePropsResult<Props>> => {
     const exchangeId = await getExchangeId();
 
     return {

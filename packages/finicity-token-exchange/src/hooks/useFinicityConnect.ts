@@ -54,12 +54,12 @@ type FinicityWindow = Window &
     };
 
 // https://docs.finicity.com/c_connect-web-2-0-embed-iframe/#connect-web-embed-2
-const FINICITY_CONNECT_URL: string = "https://connect2.finicity.com/assets/sdk/finicity-connect.min.js";
+const FINICITY_CONNECT_URL = "https://connect2.finicity.com/assets/sdk/finicity-connect.min.js";
 
 // Extracted from FINICITY_CONNECT_URL above
-const FINICITY_IFRAME_ID: string = "finicityConnectIframe";
+const FINICITY_IFRAME_ID = "finicityConnectIframe";
 
-const noop = () => {};
+const noop = () => undefined;
 
 export const useFinicityConnect = (options: ConnectOptions) => {
     // Load Finicity's script from their CDN

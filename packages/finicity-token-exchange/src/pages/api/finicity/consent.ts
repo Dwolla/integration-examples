@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { fetchPartnerConsent, FetchPartnerConsentOptions } from "../../../integrations/finicity";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { FetchPartnerConsentOptions } from "../../../integrations/finicity";
+import { fetchPartnerConsent } from "../../../integrations/finicity";
 import { assertRequestMethod, assertValidBody, tryWithResponse } from "../../../utils";
 
 /**

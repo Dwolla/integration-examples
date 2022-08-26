@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { CreateCustomerOptions, createTestingCustomer } from "../../../integrations/finicity";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { CreateCustomerOptions } from "../../../integrations/finicity";
+import { createTestingCustomer } from "../../../integrations/finicity";
 import { assertRequestMethod, assertValidBody, tryWithResponse } from "../../../utils";
 
 /**

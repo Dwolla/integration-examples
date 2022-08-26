@@ -1,13 +1,8 @@
-import {
-    AccountsApi,
-    AuthenticationApi,
-    Configuration,
-    ConnectApi,
-    CustomerAccount,
-    CustomersApi
-} from "@finicity/node-sdk";
-import { BaseAPI } from "@finicity/node-sdk/dist/base";
-import axios, { AxiosRequestConfig } from "axios";
+import type { CustomerAccount } from "@finicity/node-sdk";
+import { AccountsApi, AuthenticationApi, Configuration, ConnectApi, CustomersApi } from "@finicity/node-sdk";
+import type { BaseAPI } from "@finicity/node-sdk/dist/base";
+import type { AxiosRequestConfig } from "axios";
+import axios from "axios";
 
 export interface CreateCustomerOptions {
     username: string;
@@ -17,9 +12,8 @@ export interface FetchPartnerConsentOptions extends WithCustomerId {
     accountId: string;
 }
 
-export interface GenerateConnectUrlOptions extends WithCustomerId {}
-
-export interface GetCustomerAccountsOptions extends WithCustomerId {}
+export type GenerateConnectUrlOptions = WithCustomerId;
+export type GetCustomerAccountsOptions = WithCustomerId;
 
 interface WithCustomerId {
     customerId: string;
@@ -28,11 +22,11 @@ interface WithCustomerId {
 type Constructable<APIType extends BaseAPI> = { new (...args: any[]): APIType };
 
 // Dwolla's hardcoded Finicity partner ID
-const DWOLLA_PARTNER_ID: string = "2445583946651";
+const DWOLLA_PARTNER_ID = "2445583946651";
 
 // NOTE: Once Finicity has this endpoint documented, that should be used instead.
 // This is only being used since the OpenAPI spec does not currently export this endpoint.
-const FINICITY_PARTNER_CONSENT_URL: string = "https://api.finicity.com/aggregation/v1/partners/accessKey";
+const FINICITY_PARTNER_CONSENT_URL = "https://api.finicity.com/aggregation/v1/partners/accessKey";
 
 const axiosRequestConfig: AxiosRequestConfig = {
     headers: {
@@ -136,6 +130,7 @@ function withTokenInterceptor(): { create: () => Promise<void> } {
                 const tokenExpiration = getTokenExpiration();
                 if (!tokenExpiration || tokenExpiration < new Date()) await refreshToken();
 
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 config.headers["Finicity-App-Token"] = getCurrentToken();
                 return config;

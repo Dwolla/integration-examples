@@ -1,10 +1,11 @@
-import { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
-import { useRouter } from "next/router";
+import type { CustomerAccount } from "@finicity/node-sdk";
+import type { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
 import Head from "next/head";
-import { FetchPartnerConsentOptions, generateConnectUrl, GenerateConnectUrlOptions } from "../integrations/finicity";
+import { useRouter } from "next/router";
+import type { ParsedUrlQuery } from "querystring";
 import { useFinicityConnect } from "../hooks/useFinicityConnect";
-import { CustomerAccount } from "@finicity/node-sdk";
-import { ParsedUrlQuery } from "querystring";
+import type { FetchPartnerConsentOptions, GenerateConnectUrlOptions } from "../integrations/finicity";
+import { generateConnectUrl } from "../integrations/finicity";
 
 interface Props {
     connectUrl: string;

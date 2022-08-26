@@ -1,10 +1,11 @@
-import { NextPage } from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { getMissingKeys, uuidFromUrl } from "../utils";
+import { useRouter } from "next/router";
+import type { ChangeEvent, FormEvent } from "react";
+import { useState } from "react";
 import type { CreateUnverifiedCustomerOptions } from "../integrations/dwolla";
 import type { CreateCustomerOptions } from "../integrations/finicity";
-import { useRouter } from "next/router";
+import { getMissingKeys, uuidFromUrl } from "../utils";
 
 type FormState = Partial<CreateUnverifiedCustomerOptions>;
 

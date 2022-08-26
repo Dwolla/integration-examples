@@ -1,6 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { assertRequestMethod, assertValidBody, tryWithResponse } from "../../../utils";
-import { createFundingSource, CreateFundingSourceOptions } from "../../../integrations/dwolla";
+import type { CreateFundingSourceOptions } from "../../../integrations/dwolla";
+import { createFundingSource } from "../../../integrations/dwolla";
 
 /**
  * POST: Create a funding source for a customer using an exchange
