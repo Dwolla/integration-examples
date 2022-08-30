@@ -140,60 +140,58 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
     }
 
     return (
-        <>
-            <MainLayout title="Step 3: Create Exchange and Funding Source">
-                {alert && (
-                    <Alert severity={alert.severity} sx={{ mb: 2 }}>
-                        {alert.message}
-                    </Alert>
-                )}
+        <MainLayout title="Step 3: Create Exchange and Funding Source">
+            {alert && (
+                <Alert severity={alert.severity} sx={{ mb: 2 }}>
+                    {alert.message}
+                </Alert>
+            )}
 
-                <Card sx={{ padding: 3 }}>
-                    <CardHeader title="Create an Exchange and Funding Source" />
-                    <CardContent>
-                        <Box component="form" autoComplete="off" noValidate onSubmit={handleFormSubmit} sx={{ mt: 1 }}>
-                            <TextField
-                                type="text"
-                                error={missingRequiredKeys?.includes("name")}
-                                fullWidth
-                                helperText={missingRequiredKeys?.includes("name") && "Name is required"}
-                                label="Name"
-                                name="name"
+            <Card sx={{ padding: 3 }}>
+                <CardHeader title="Create an Exchange and Funding Source" />
+                <CardContent>
+                    <Box component="form" autoComplete="off" noValidate onSubmit={handleFormSubmit} sx={{ mt: 1 }}>
+                        <TextField
+                            type="text"
+                            error={missingRequiredKeys?.includes("name")}
+                            fullWidth
+                            helperText={missingRequiredKeys?.includes("name") && "Name is required"}
+                            label="Name"
+                            name="name"
+                            onChange={handleInputChanged}
+                            required
+                            value={formData?.name || ""}
+                        />
+
+                        <FormControl fullWidth sx={{ mt: 2 }}>
+                            <InputLabel>Type</InputLabel>
+                            <Select
+                                label="Type"
+                                name="type"
                                 onChange={handleInputChanged}
-                                required
-                                value={formData?.name || ""}
-                            />
-
-                            <FormControl fullWidth sx={{ mt: 2 }}>
-                                <InputLabel>Type</InputLabel>
-                                <Select
-                                    label="Type"
-                                    name="type"
-                                    onChange={handleInputChanged}
-                                    value={formData?.type || "checking"}
-                                >
-                                    <MenuItem selected value="checking">
-                                        Checking
-                                    </MenuItem>
-                                    <MenuItem value="savings">Savings</MenuItem>
-                                </Select>
-                            </FormControl>
-
-                            <LoadingButton
-                                type="submit"
-                                fullWidth
-                                loading={networkState === NetworkState.LOADING}
-                                size="large"
-                                sx={{ mt: 2 }}
-                                variant="contained"
+                                value={formData?.type || "checking"}
                             >
-                                Submit
-                            </LoadingButton>
-                        </Box>
-                    </CardContent>
-                </Card>
-            </MainLayout>
-        </>
+                                <MenuItem selected value="checking">
+                                    Checking
+                                </MenuItem>
+                                <MenuItem value="savings">Savings</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <LoadingButton
+                            type="submit"
+                            fullWidth
+                            loading={networkState === NetworkState.LOADING}
+                            size="large"
+                            sx={{ mt: 2 }}
+                            variant="contained"
+                        >
+                            Submit
+                        </LoadingButton>
+                    </Box>
+                </CardContent>
+            </Card>
+        </MainLayout>
     );
 };
 
