@@ -21,7 +21,14 @@
         "@types/react-dom": "18.0.6"
     },
     "dependencies": {
+        "@emotion/cache": "^11.10.3",
+        "@emotion/react": "^11.10.0",
+        "@emotion/server": "^11.10.0",
+        "@emotion/styled": "^11.10.0",
         "@finicity/node-sdk": "link:sdks/finicity",
+        "@mui/icons-material": "^5.10.2",
+        "@mui/lab": "5.0.0-alpha.96",
+        "@mui/material": "^5.10.2",
         "axios": "^0.27.2",
         "core-js": "^3.24.1",
         "dwolla-v2": "4.0.0-ts-alpha.0",

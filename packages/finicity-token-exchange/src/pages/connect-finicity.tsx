@@ -1,11 +1,13 @@
 import type { CustomerAccount } from "@finicity/node-sdk";
+import { Card, CardContent, CardHeader, LinearProgress, Typography } from "@mui/material";
 import type { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import type { ParsedUrlQuery } from "querystring";
+import { useState } from "react";
 import { useFinicityConnect } from "../hooks/useFinicityConnect";
 import type { FetchPartnerConsentOptions, GenerateConnectUrlOptions } from "../integrations/finicity";
 import { generateConnectUrl } from "../integrations/finicity";
+import MainLayout from "../layouts/MainLayout";
 
 interface Props {
     connectUrl: string;
@@ -19,6 +21,7 @@ interface Query extends ParsedUrlQuery {
 export const ConnectFinicityPage: NextPage<Props> = ({ connectUrl }) => {
     const router = useRouter();
     const { dwollaCustomerId, finicityCustomerId } = router.query as Query;
+    const [showProgress, setShowProgress] = useState<boolean>(false);
 
     const { launch: launchConnect, ready: isConnectReady } = useFinicityConnect({
         onCancel(): void {
@@ -33,6 +36,8 @@ export const ConnectFinicityPage: NextPage<Props> = ({ connectUrl }) => {
          * to choose which FI account they'd like to associate with their Dwolla exchange resource.
          */
         async onSuccess(): Promise<void> {
+            setShowProgress(true);
+
             const accounts = await fetchCustomerAccounts();
             if (!accounts) return alert("No accounts were returned from fetchCustomerAccounts().");
 
@@ -83,14 +88,22 @@ export const ConnectFinicityPage: NextPage<Props> = ({ connectUrl }) => {
     }
 
     // Once Connect is ready, launch the widget
-    if (isConnectReady) launchConnect({ url: connectUrl });
+    if (isConnectReady && !showProgress) launchConnect({ url: connectUrl });
 
     return (
-        <>
-            <Head>
-                <title>Step 2: Connect Bank Account (with Finicity)</title>
-            </Head>
-        </>
+        <MainLayout title="Step 2: Connect Bank with Finicity">
+            {showProgress && (
+                <Card sx={{ padding: 3 }}>
+                    <CardHeader title="Connecting..." />
+                    <CardContent>
+                        <LinearProgress />
+                        <Typography component="p" sx={{ mt: 1 }} variant="body1">
+                            Please wait while we connect to Finicity. This make take a few moments.
+                        </Typography>
+                    </CardContent>
+                </Card>
+            )}
+        </MainLayout>
     );
 };
 

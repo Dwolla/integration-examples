@@ -1,12 +1,27 @@
+import { LoadingButton } from "@mui/lab";
+import type { SelectChangeEvent } from "@mui/material";
+import {
+    Alert,
+    Box,
+    Card,
+    CardContent,
+    CardHeader,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField
+} from "@mui/material";
 import type { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import type { ParsedUrlQuery } from "querystring";
 import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
+import { NetworkState, useNetworkAlert } from "../hooks/useNetworkAlert";
 import type { CreateExchangeOptions, CreateFundingSourceOptions } from "../integrations/dwolla";
 import { getExchangeId } from "../integrations/dwolla";
-import { getMissingKeys } from "../utils";
+import MainLayout from "../layouts/MainLayout";
+import { getFormValidation } from "../utils";
 
 interface Props {
     exchangeId: string;
@@ -17,14 +32,27 @@ interface Query extends ParsedUrlQuery {
     encodedReceipt: string;
 }
 
-type FormData = Partial<CreateFundingSourceOptions>;
+type FormState = Partial<CreateFundingSourceOptions>;
 
 export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
     const router = useRouter();
-    const [formData, setFormData] = useState<FormData>({ type: "checking" });
+
+    const { alert, networkState, updateNetworkAlert } = useNetworkAlert();
+    const [formData, setFormData] = useState<FormState>({ type: "checking" });
+    const [missingRequiredKeys, setMissingRequiredKeys] = useState<(keyof FormState)[]>();
 
     const { dwollaCustomerId, encodedReceipt } = router.query as Query;
     const decodedReceipt = JSON.parse(Buffer.from(decodeURIComponent(encodedReceipt), "base64").toString("ascii"));
+
+    /**
+     * Checks if the form is valid by ensuring that all required fields have a value present in them.
+     * @returns true if the form is valid (i.e. does not have any missing keys), otherwise false
+     */
+    function checkFormValidity() {
+        const { isValid, missingKeys } = getFormValidation(formData, ["name", "type"]);
+        if (!isValid) setMissingRequiredKeys(missingKeys);
+        return isValid;
+    }
 
     /**
      * Calls our API to create a Dwolla exchange.
@@ -76,63 +104,94 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
      */
     async function handleFormSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
         event.preventDefault();
-        if (!isFormValid()) return alert("Please fill out all of the required form fields.");
+        if (!checkFormValidity()) return;
+        updateNetworkAlert(null, NetworkState.LOADING);
 
         const exchangeUrl = await createExchange();
-        if (!exchangeUrl) return alert("No exchange URL was returned from createExchange().");
+
+        if (!exchangeUrl) {
+            return updateNetworkAlert(
+                { severity: "error", message: "No exchange URL was returned from createExchange()" },
+                NetworkState.NOT_LOADING
+            );
+        }
 
         const fundingSourceUrl = await createFundingSource(exchangeUrl);
-        if (!fundingSourceUrl) return alert("No funding source URL was returned from createFundingSource().");
 
-        console.log("Success! Funding Source Location: ", fundingSourceUrl);
+        if (!fundingSourceUrl) {
+            return updateNetworkAlert(
+                { severity: "error", message: "No funding source URL was returned from createFundingSource()" },
+                NetworkState.NOT_LOADING
+            );
+        }
+        return updateNetworkAlert(
+            { severity: "success", message: `Funding Source Location: ${fundingSourceUrl}` },
+            NetworkState.NOT_LOADING
+        );
     }
 
     /**
      * Mutates the form state if the input value changes.
      */
-    function handleInputChanged({ target }: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void {
+    function handleInputChanged({
+        target
+    }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent): void {
         setFormData({ ...formData, [target.name]: target.value });
     }
 
-    /**
-     * Gets if all the required form fields have been entered.
-     */
-    function isFormValid(): boolean {
-        return getMissingKeys(formData, ["name", "type"]).length === 0;
-    }
-
     return (
-        <>
-            <Head>
-                <title>Step 3: Create Exchange and Funding Source</title>
-            </Head>
+        <MainLayout title="Step 3: Create Exchange and Funding Source">
+            {alert && (
+                <Alert severity={alert.severity} sx={{ mb: 2 }}>
+                    {alert.message}
+                </Alert>
+            )}
 
-            <form onSubmit={handleFormSubmit}>
-                <div className="form-group">
-                    <label htmlFor="name">Name</label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        onChange={handleInputChanged}
-                        placeholder="Funding Source Name"
-                        value={formData?.name || ""}
-                    />
-                </div>
+            <Card sx={{ padding: 3 }}>
+                <CardHeader title="Create an Exchange and Funding Source" />
+                <CardContent>
+                    <Box component="form" autoComplete="off" noValidate onSubmit={handleFormSubmit} sx={{ mt: 1 }}>
+                        <TextField
+                            type="text"
+                            error={missingRequiredKeys?.includes("name")}
+                            fullWidth
+                            helperText={missingRequiredKeys?.includes("name") && "Name is required"}
+                            label="Name"
+                            name="name"
+                            onChange={handleInputChanged}
+                            required
+                            value={formData?.name || ""}
+                        />
 
-                <div className="form-group">
-                    <label htmlFor="type">Type</label>
-                    <select id="type" name="type" onChange={handleInputChanged} value={formData?.type || "checking"}>
-                        <option value="checking">Checking</option>
-                        <option value="savings">Savings</option>
-                    </select>
-                </div>
+                        <FormControl fullWidth sx={{ mt: 2 }}>
+                            <InputLabel>Type</InputLabel>
+                            <Select
+                                label="Type"
+                                name="type"
+                                onChange={handleInputChanged}
+                                value={formData?.type || "checking"}
+                            >
+                                <MenuItem selected value="checking">
+                                    Checking
+                                </MenuItem>
+                                <MenuItem value="savings">Savings</MenuItem>
+                            </Select>
+                        </FormControl>
 
-                <div className="form-group">
-                    <button type="submit">Create Funding Source</button>
-                </div>
-            </form>
-        </>
+                        <LoadingButton
+                            type="submit"
+                            fullWidth
+                            loading={networkState === NetworkState.LOADING}
+                            size="large"
+                            sx={{ mt: 2 }}
+                            variant="contained"
+                        >
+                            Submit
+                        </LoadingButton>
+                    </Box>
+                </CardContent>
+            </Card>
+        </MainLayout>
     );
 };
 

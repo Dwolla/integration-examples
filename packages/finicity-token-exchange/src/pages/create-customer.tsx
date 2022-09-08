@@ -1,17 +1,47 @@
+import { Alert, LoadingButton } from "@mui/lab";
+import { Box, Card, CardContent, CardHeader, Grid, TextField } from "@mui/material";
 import type { NextPage } from "next";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
+import { NetworkState, useNetworkAlert } from "../hooks/useNetworkAlert";
 import type { CreateUnverifiedCustomerOptions } from "../integrations/dwolla";
 import type { CreateCustomerOptions } from "../integrations/finicity";
+import MainLayout from "../layouts/MainLayout";
 import { getMissingKeys, uuidFromUrl } from "../utils";
 
+/**
+ * Defines an array of all element(s)/key(s) that the form will have.
+ */
 type FormState = Partial<CreateUnverifiedCustomerOptions>;
 
 const CreateCustomerPage: NextPage = () => {
     const router = useRouter();
+
+    /**
+     * Our current network alert. Used to indicate to the user if we're loading/awaiting a resource.
+     */
+    const { alert, networkState, updateNetworkAlert } = useNetworkAlert();
+
+    /**
+     * Current state of our form—i.e. what key(s) are associated which what value(s).
+     */
     const [formData, setFormData] = useState<FormState>({});
+
+    /**
+     * Array of missing form keys if the user submits the form. This is used to show an error.
+     */
+    const [missingRequiredKeys, setMissingRequiredKeys] = useState<(keyof FormState)[]>();
+
+    /**
+     * Checks if the form is valid by ensuring that all required fields have a value present in them.
+     * @returns true if the form is valid (i.e. does not have any missing keys), otherwise false
+     */
+    function checkFormValidity(): boolean {
+        const missingKeys = getMissingKeys(formData, ["firstName", "lastName", "email"]);
+        setMissingRequiredKeys(missingKeys);
+        return missingKeys.length === 0;
+    }
 
     /**
      * Calls our API to create an unverified customer record with Dwolla.
@@ -54,13 +84,26 @@ const CreateCustomerPage: NextPage = () => {
      */
     async function handleFormSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
         event.preventDefault();
-        if (!isFormValid()) return alert("Please fill out all of the required form fields.");
+        if (!checkFormValidity()) return;
+        updateNetworkAlert(null, NetworkState.LOADING);
 
         const dwollaCustomerId = await createDwollaCustomer();
-        if (!dwollaCustomerId) return alert("No customer ID was returned from createDwollaCustomer().");
+
+        if (!dwollaCustomerId) {
+            return updateNetworkAlert(
+                { severity: "error", message: "No customer ID was returned from createDwollaCustomer()" },
+                NetworkState.NOT_LOADING
+            );
+        }
 
         const finicityCustomerId = await createFinicityCustomer();
-        if (!finicityCustomerId) return alert("No customer ID was returned from createFinicityCustomer().");
+
+        if (!finicityCustomerId) {
+            return updateNetworkAlert(
+                { severity: "error", message: "No customer ID was returned from createFinicityCustomer()" },
+                NetworkState.NOT_LOADING
+            );
+        }
 
         await router.push({
             pathname: "/connect-finicity",
@@ -75,61 +118,73 @@ const CreateCustomerPage: NextPage = () => {
         setFormData({ ...formData, [target.name]: target.value });
     }
 
-    /**
-     * Gets if all the required form fields have been entered.
-     */
-    function isFormValid(): boolean {
-        return getMissingKeys(formData, ["firstName", "lastName", "email"]).length === 0;
-    }
-
     return (
-        <>
-            <Head>
-                <title>Step 1: Create a Customer</title>
-            </Head>
+        <MainLayout title="Step 1: Create a Customer">
+            {alert && (
+                <Alert severity={alert.severity} sx={{ mb: 2 }}>
+                    {alert.message}
+                </Alert>
+            )}
 
-            <form onSubmit={handleFormSubmit}>
-                <div className="form-group">
-                    <label htmlFor="first-name">First Name</label>
-                    <input
-                        type="text"
-                        id="first-name"
-                        name="firstName"
-                        onChange={handleInputChanged}
-                        placeholder="First Name"
-                        value={formData?.firstName || ""}
-                    />
-                </div>
+            <Card sx={{ padding: 3 }}>
+                <CardHeader title="Create a Customer" />
+                <CardContent>
+                    <Box component="form" autoComplete="off" noValidate onSubmit={handleFormSubmit} sx={{ mt: 1 }}>
+                        <Grid container columnSpacing={2}>
+                            <Grid item md={6}>
+                                <TextField
+                                    type="text"
+                                    error={missingRequiredKeys?.includes("firstName")}
+                                    helperText={missingRequiredKeys?.includes("firstName") && "First name is required"}
+                                    label="First Name"
+                                    name="firstName"
+                                    onChange={handleInputChanged}
+                                    required
+                                    value={formData?.firstName || ""}
+                                />
+                            </Grid>
 
-                <div className="form-group">
-                    <label htmlFor="last-name">Last Name</label>
-                    <input
-                        type="text"
-                        id="last-name"
-                        name="lastName"
-                        onChange={handleInputChanged}
-                        placeholder="Last Name"
-                        value={formData?.lastName || ""}
-                    />
-                </div>
+                            <Grid item md={6}>
+                                <TextField
+                                    type="text"
+                                    error={missingRequiredKeys?.includes("lastName")}
+                                    helperText={missingRequiredKeys?.includes("lastName") && "Last name is required"}
+                                    label="Last Name"
+                                    name="lastName"
+                                    onChange={handleInputChanged}
+                                    required
+                                    value={formData?.lastName || ""}
+                                />
+                            </Grid>
+                        </Grid>
 
-                <div className="form-group">
-                    <label htmlFor="email">Email Address</label>
-                    <input
-                        type="text"
-                        id="email"
-                        name="email"
-                        onChange={handleInputChanged}
-                        placeholder="Email Address"
-                        value={formData?.email || ""}
-                    />
-                </div>
+                        <TextField
+                            type="email"
+                            error={missingRequiredKeys?.includes("email")}
+                            fullWidth
+                            helperText={missingRequiredKeys?.includes("email") && "Email address is required"}
+                            label="Email Address"
+                            name="email"
+                            onChange={handleInputChanged}
+                            required
+                            sx={{ mt: 2 }}
+                            value={formData?.email || ""}
+                        />
 
-                <div className="form-group">
-                    <button type="submit">Create Customer</button>
-                </div>
-            </form>
-        </>
+                        <LoadingButton
+                            type="submit"
+                            fullWidth
+                            loading={networkState === NetworkState.LOADING}
+                            size="large"
+                            sx={{ mt: 2 }}
+                            variant="contained"
+                        >
+                            Submit
+                        </LoadingButton>
+                    </Box>
+                </CardContent>
+            </Card>
+        </MainLayout>
     );
 };
 

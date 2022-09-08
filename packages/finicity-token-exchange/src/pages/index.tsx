@@ -1,6 +1,6 @@
 import type { GetServerSideProps, NextPage } from "next";
 
-const Home: NextPage = () => null;
+const HomePage: NextPage = () => null;
 
 export const getServerSideProps: GetServerSideProps = async () => {
     return {
@@ -11,4 +11,4 @@ export const getServerSideProps: GetServerSideProps = async () => {
     };
 };
 
-export default Home;
+export default HomePage;
