@@ -1,0 +1,36 @@
+{
+    "name": "@example/mx-token-exchange",
+    "version": "0.1.0",
+    "description": "Dwolla integration example that uses the Secure Token Exchange to verify a customer's bank account using MX",
+    "license": "MIT",
+    "author": "Dwolla, Inc.",
+    "scripts": {
+        "build": "next build",
+        "checks": "../../node_modules/.bin/tsc --pretty --noEmit && pnpm lint && pnpm prettier:check",
+        "dev": "next dev",
+        "format": "../../node_modules/.bin/prettier --config ../../.prettierrc.json --write \"src/**/*.+(ts|tsx)\"",
+        "lint": "next lint --config ../../.eslintrc.json",
+        "lint:fix": "next lint --config ../../.eslintrc.json --fix",
+        "prettier:check": "../../node_modules/.bin/prettier --check --config ../../.prettierrc.json \"src/**/*.+(ts|tsx)\"",
+        "prettier:write": "../../node_modules/.bin/prettier --config ../../.prettierrc.json \"src/**/*.+(ts|tsx)\" --write",
+        "start": "next start"
+    },
+    "devDependencies": {
+        "@types/node": "18.7.16",
+        "@types/react": "18.0.19",
+        "@types/react-dom": "18.0.6"
+    },
+    "dependencies": {
+        "@emotion/cache": "^11.10.3",
+        "@emotion/react": "^11.10.4",
+        "@emotion/server": "^11.10.0",
+        "@emotion/styled": "^11.10.4",
+        "@mui/icons-material": "^5.10.3",
+        "@mui/material": "^5.10.5",
+        "dwolla-v2": "4.0.0-ts-alpha.0",
+        "form-data": "^4.0.0",
+        "next": "12.3.0",
+        "react": "18.2.0",
+        "react-dom": "18.2.0"
+    }
+}
