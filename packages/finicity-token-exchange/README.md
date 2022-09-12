@@ -1,6 +1,6 @@
 # Dwolla and Finicity Secure Token Exchange
 
-This example project, build using [Next.js](https://nextjs.org/), demonstrates how a Funding Source can be created for a Dwolla Customer using Dwolla's integration with Finicity and Dwolla's Secure Token Exchange. By doing this, Dwolla is able to instantly verify the Funding Source without the need for your application to transmit sensitive data. (All the sensitive data is retrieved directly from Finicity.)
+This example project, built using [Next.js](https://nextjs.org/), demonstrates how a Funding Source can be created for a Dwolla Customer using Dwolla's integration with Finicity and Dwolla's Secure Token Exchange. By doing this, Dwolla is able to instantly verify the Funding Source without the need for your application to transmit sensitive data. (All the sensitive data is retrieved directly from Finicity.)
 
 ## Notes
 
