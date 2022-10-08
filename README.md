@@ -16,3 +16,4 @@ To get more information on installing and running a specific app, please click o
 
 * [Finicity](https://github.com/Dwolla/integration-examples/tree/main/packages/finicity-token-exchange#readme)
 * [Plaid](https://github.com/Dwolla/integration-examples/tree/main/packages/plaid-funding-source#readme)
+* [MX](https://github.com/Dwolla/integration-examples/tree/main/packages/mx-token-exchange#readme)
