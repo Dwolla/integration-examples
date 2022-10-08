@@ -23,7 +23,7 @@ import { getExchangeId } from "../integrations/dwolla";
 import MainLayout from "../layouts/MainLayout";
 import { getMissingKeys } from "../utils";
 import { DwollaExchangesAPIBody, DwollaExchangesAPIResponse } from "./api/dwolla/exchanges";
-import { DwollaFundingSourceAPIBody } from "./api/dwolla/funding-sources";
+import { DwollaFundingSourceAPIBody, DwollaFundingSourcesAPIResponse } from "./api/dwolla/funding-sources";
 
 interface Props {
     exchangeId: string;
@@ -39,9 +39,24 @@ type FormState = Partial<CreateFundingSourceOptions>;
 export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
     const router = useRouter();
 
+    /**
+     * Our current network alert. Used to indicate to the user if we're loading/awaiting a resource.
+     */
     const { alert, networkState, updateNetworkAlert } = useNetworkAlert();
+
+    /**
+     * The Dwolla Customer ID and token that we will use when creating the Exchange.
+     */
     const { dwollaCustomerId, processorToken } = router.query as Query;
+
+    /**
+     * Current state of our form. In other words, what key(s) are associated with what value(s), if any.
+     */
     const [formData, setFormData] = useState<FormState>({ type: "checking" });
+
+    /**
+     * Array of missing form keys, if the user submits the form. This is used to show an error.
+     */
     const [missingRequiredKeys, setMissingRequiredKeys] = useState<Array<keyof FormState>>();
 
     /**
@@ -55,8 +70,8 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
     }
 
     /**
-     * Calls our API to create a Dwolla exchange.
-     * @returns - The location of the new exchange resource
+     * Calls our API to create a Dwolla Exchange.
+     * @returns - The resource location of the new Exchange
      */
     async function createExchange(): Promise<string | undefined> {
         const response = await fetch("/api/dwolla/exchanges", {
@@ -77,8 +92,8 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
     }
 
     /**
-     * Calls our API to create a funding source using the exchange URL
-     * @returns - The location of the new funding source resource
+     * Calls our API to create a Funding Source using an Exchange URL
+     * @returns - The resource location of the new Funding Source
      */
     async function createFundingSource(exchangeUrl: string): Promise<string | undefined> {
         const response = await fetch("/api/dwolla/funding-sources", {
@@ -96,11 +111,11 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
         });
 
         if (!response.ok) return undefined;
-        return ((await response.json()) as DwollaExchangesAPIResponse).resourceHref;
+        return ((await response.json()) as DwollaFundingSourcesAPIResponse).resourceHref;
     }
 
     /**
-     * Creates an exchange and a subsequent funding source when the form submits.
+     * Creates an Exchange and a subsequent Funding Source when the form submits.
      */
     async function handleFormSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
         event.preventDefault();
@@ -196,7 +211,7 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
 };
 
 /**
- * When the page loads, fetch Finicity's exchange ID from Dwolla and pass it as a prop.
+ * When the page loads, fetch MX's Exchange Partner ID from Dwolla and pass it as a page prop.
  */
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetServerSidePropsResult<Props>> => {
     const exchangeId = await getExchangeId();
