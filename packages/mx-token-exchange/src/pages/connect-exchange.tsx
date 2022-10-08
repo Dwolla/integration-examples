@@ -73,7 +73,7 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
         });
 
         if (!response.ok) return undefined;
-        return ((await response.json()) as DwollaExchangesAPIResponse).resourceHref ?? undefined;
+        return ((await response.json()) as DwollaExchangesAPIResponse).resourceHref;
     }
 
     /**
@@ -96,7 +96,7 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
         });
 
         if (!response.ok) return undefined;
-        return ((await response.json()) as DwollaExchangesAPIResponse).resourceHref ?? undefined;
+        return ((await response.json()) as DwollaExchangesAPIResponse).resourceHref;
     }
 
     /**

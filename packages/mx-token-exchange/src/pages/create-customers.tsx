@@ -8,7 +8,7 @@ import { CreateUnverifiedCustomerOptions } from "../integrations/dwolla";
 import { CreateUserOptions } from "../integrations/mx";
 import MainLayout from "../layouts/MainLayout";
 import { getMissingKeys, uuidFromUrl } from "../utils";
-import { DwollaCustomersResponseBody } from "./api/dwolla/customers";
+import { DwollaCustomersAPIResponse } from "./api/dwolla/customers";
 import { MXUsersAPIResponse } from "./api/mx/users";
 
 type FormState = Partial<CreateUnverifiedCustomerOptions & CreateUserOptions>;
@@ -54,8 +54,8 @@ const CreateCustomersPage: NextPage = () => {
         });
 
         if (!response.ok) return undefined;
-        const resourceLocation = ((await response.json()) as DwollaCustomersResponseBody).location;
-        return uuidFromUrl(resourceLocation);
+        const resourceHref = ((await response.json()) as DwollaCustomersAPIResponse).resourceHref;
+        return uuidFromUrl(resourceHref);
     }
 
     /**
