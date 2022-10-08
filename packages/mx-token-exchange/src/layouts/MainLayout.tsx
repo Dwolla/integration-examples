@@ -1,6 +1,6 @@
 import { Container, styled } from "@mui/material";
 import Head from "next/head";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface Props {
     children?: ReactNode;

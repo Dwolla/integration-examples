@@ -1,15 +1,16 @@
 import { LoadingButton } from "@mui/lab";
 import { Alert, Box, Card, CardContent, CardHeader, Grid, TextField } from "@mui/material";
-import { NextPage } from "next";
+import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { ChangeEvent, FormEvent, useState } from "react";
+import type { ChangeEvent, FormEvent} from "react";
+import { useState } from "react";
 import { NetworkState, useNetworkAlert } from "../hooks/useNetworkAlert";
-import { CreateUnverifiedCustomerOptions } from "../integrations/dwolla";
-import { CreateUserOptions } from "../integrations/mx";
+import type { CreateUnverifiedCustomerOptions } from "../integrations/dwolla";
+import type { CreateUserOptions } from "../integrations/mx";
 import MainLayout from "../layouts/MainLayout";
 import { getMissingKeys, uuidFromUrl } from "../utils";
-import { DwollaCustomersAPIResponse } from "./api/dwolla/customers";
-import { MXUsersAPIResponse } from "./api/mx/users";
+import type { DwollaCustomersAPIResponse } from "./api/dwolla/customers";
+import type { MXUsersAPIResponse } from "./api/mx/users";
 
 type FormState = Partial<CreateUnverifiedCustomerOptions & CreateUserOptions>;
 

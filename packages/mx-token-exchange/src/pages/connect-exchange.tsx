@@ -22,8 +22,8 @@ import type { CreateFundingSourceOptions } from "../integrations/dwolla";
 import { getExchangeId } from "../integrations/dwolla";
 import MainLayout from "../layouts/MainLayout";
 import { getMissingKeys } from "../utils";
-import { DwollaExchangesAPIBody, DwollaExchangesAPIResponse } from "./api/dwolla/exchanges";
-import { DwollaFundingSourceAPIBody, DwollaFundingSourcesAPIResponse } from "./api/dwolla/funding-sources";
+import type { DwollaExchangesAPIBody, DwollaExchangesAPIResponse } from "./api/dwolla/exchanges";
+import type { DwollaFundingSourceAPIBody, DwollaFundingSourcesAPIResponse } from "./api/dwolla/funding-sources";
 
 interface Props {
     exchangeId: string;

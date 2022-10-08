@@ -1,6 +1,7 @@
-import { UserResponse } from "mx-platform-node";
-import { NextApiRequest, NextApiResponse } from "next";
-import { createUser, CreateUserOptions } from "../../../integrations/mx";
+import type { UserResponse } from "mx-platform-node";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { CreateUserOptions } from "../../../integrations/mx";
+import { createUser } from "../../../integrations/mx";
 import { assertRequestMethod, assertValidBody, tryNextResponse } from "../../../utils";
 
 export interface MXUsersAPIResponse {

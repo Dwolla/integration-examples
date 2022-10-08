@@ -1,15 +1,17 @@
 import { Box } from "@mui/material";
 import { ConnectWidget } from "@mxenabled/web-widget-sdk";
-import { ConnectMemberConnectedPayload } from "@mxenabled/widget-post-message-definitions";
-import { AccountNumberResponse } from "mx-platform-node";
-import { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
+import type { ConnectMemberConnectedPayload } from "@mxenabled/widget-post-message-definitions";
+import type { AccountNumberResponse } from "mx-platform-node";
+import type { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
-import { ParsedUrlQuery, stringify as stringifyQueryString } from "querystring";
+import type { ParsedUrlQuery} from "querystring";
+import { stringify as stringifyQueryString } from "querystring";
 import { useWidgetRef } from "../hooks/useWidgetRef";
-import { GenerateWidgetOptions, generateWidgetUrl } from "../integrations/mx";
+import type { GenerateWidgetOptions} from "../integrations/mx";
+import { generateWidgetUrl } from "../integrations/mx";
 import MainLayout from "../layouts/MainLayout";
-import { MXAccountsAPIQuery, MXAccountsAPIResponse } from "./api/mx/accounts";
-import { MXProcessorTokenAPIBody, MXProcessorTokenAPIResponse } from "./api/mx/processor_token";
+import type { MXAccountsAPIQuery, MXAccountsAPIResponse } from "./api/mx/accounts";
+import type { MXProcessorTokenAPIBody, MXProcessorTokenAPIResponse } from "./api/mx/processor_token";
 
 interface Props {
     widgetUrl?: string;

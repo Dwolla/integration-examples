@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { createFundingSource, CreateFundingSourceOptions } from "../../../integrations/dwolla";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { CreateFundingSourceOptions } from "../../../integrations/dwolla";
+import { createFundingSource } from "../../../integrations/dwolla";
 import { assertRequestMethod, assertValidBody, tryNextResponse } from "../../../utils";
 
 export interface DwollaFundingSourcesAPIResponse {

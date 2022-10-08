@@ -1,6 +1,7 @@
-import { AccountNumberResponse } from "mx-platform-node";
-import { NextApiRequest, NextApiResponse } from "next";
-import { listVerifiedAccounts, ListVerifiedAccountsOptions } from "../../../integrations/mx";
+import type { AccountNumberResponse } from "mx-platform-node";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { ListVerifiedAccountsOptions } from "../../../integrations/mx";
+import { listVerifiedAccounts } from "../../../integrations/mx";
 import { assertRequestMethod, assertValidBody, tryNextResponse } from "../../../utils";
 
 export interface MXAccountsAPIResponse {

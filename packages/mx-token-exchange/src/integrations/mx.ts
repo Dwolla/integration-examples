@@ -1,4 +1,5 @@
-import { AccountNumberResponse, Configuration, MxPlatformApi, UserResponse } from "mx-platform-node";
+import type { AccountNumberResponse, UserResponse } from "mx-platform-node";
+import { Configuration, MxPlatformApi } from "mx-platform-node";
 import { getEnvironmentVariable, newUuid } from "./";
 
 export interface CreateUserOptions {

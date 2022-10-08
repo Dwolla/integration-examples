@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { createExchange, CreateExchangeOptions } from "../../../integrations/dwolla";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { CreateExchangeOptions } from "../../../integrations/dwolla";
+import { createExchange } from "../../../integrations/dwolla";
 import { assertRequestMethod, assertValidBody, tryNextResponse } from "../../../utils";
 
 export interface DwollaExchangesAPIResponse {

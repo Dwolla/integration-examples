@@ -1,8 +1,10 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import {
-    requestAuthorizationCode,
+import type { NextApiRequest, NextApiResponse } from "next";
+import type {
     RequestAuthorizationCodeOptions,
     RequestAuthorizationCodeResponse
+} from "../../../integrations/mx";
+import {
+    requestAuthorizationCode
 } from "../../../integrations/mx";
 import { assertRequestMethod, assertValidBody, tryNextResponse } from "../../../utils";
 

@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { createUnverifiedCustomer, CreateUnverifiedCustomerOptions } from "../../../integrations/dwolla";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { CreateUnverifiedCustomerOptions } from "../../../integrations/dwolla";
+import { createUnverifiedCustomer } from "../../../integrations/dwolla";
 import { assertRequestMethod, assertValidBody, tryNextResponse } from "../../../utils";
 
 export interface DwollaCustomersAPIResponse {
