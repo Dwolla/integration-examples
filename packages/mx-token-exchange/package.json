@@ -1,6 +1,6 @@
 {
     "name": "@example/mx-token-exchange",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "description": "Dwolla integration example that uses the Secure Token Exchange to verify a customer's bank account using MX",
     "license": "MIT",
     "author": "Dwolla, Inc.",
