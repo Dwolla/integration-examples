@@ -1,7 +1,14 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 
-const Home: NextPage = () => {
-    return <div className="container">Hello, World!</div>;
+const HomePage: NextPage = () => null;
+
+export const getServerSideProps: GetServerSideProps = async () => {
+    return {
+        redirect: {
+            destination: "/create-customers",
+            permanent: true
+        }
+    };
 };
 
-export default Home;
+export default HomePage;
