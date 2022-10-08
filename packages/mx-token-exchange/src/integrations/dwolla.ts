@@ -1,12 +1,15 @@
 import { Client } from "dwolla-v2";
+import { equalsIgnoreCase } from "../utils";
 import { getEnvironmentVariable } from "./";
 
-export interface CreateExchangeOptions extends WithCustomerId {
+export interface CreateExchangeOptions {
+    customerId: string;
     exchangePartnerId: string;
     token: string;
 }
 
-export interface CreateFundingSourceOptions extends WithCustomerId {
+export interface CreateFundingSourceOptions {
+    customerId: string;
     exchangeUrl: string;
     name: string;
     type: "checking" | "savings";
@@ -16,10 +19,6 @@ export interface CreateUnverifiedCustomerOptions {
     firstName: string;
     lastName: string;
     email: string;
-}
-
-interface WithCustomerId {
-    customerId: string;
 }
 
 const client = new Client({
@@ -66,13 +65,6 @@ export async function createFundingSource({
 export async function createUnverifiedCustomer(options: CreateUnverifiedCustomerOptions): Promise<string> {
     const response = await client.post("customers", { ...options });
     return response.headers.get("Location");
-}
-
-/**
- * Compare two strings for equality, ignore case sensitivity, except for accent characters
- */
-function equalsIgnoreCase(a: string, b: string): boolean {
-    return a.localeCompare(b, undefined, { sensitivity: "accent" }) === 0;
 }
 
 /**

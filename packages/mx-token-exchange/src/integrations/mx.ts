@@ -1,10 +1,127 @@
+import { AccountNumberResponse, Configuration, MxPlatformApi, UserResponse } from "mx-platform-node";
+import { getEnvironmentVariable, newUuid } from "./";
+
+export interface CreateUserOptions {
+    email: string;
+}
+
+export interface GenerateWidgetOptions {
+    userGuid: string;
+}
+
+export interface ListVerifiedAccountsOptions {
+    memberGuid: string;
+    userGuid: string;
+}
+
+export interface RequestAuthorizationCodeOptions {
+    accountGuid: string;
+    memberGuid: string;
+    userGuid: string;
+}
+
+export interface RequestAuthorizationCodeResponse {
+    readonly authorization_code?: string;
+}
+
+export interface RequestAuthorizationCodeResponseBody {
+    readonly payment_processor_authorization_code: RequestAuthorizationCodeResponse;
+}
+
+const ACCEPT_HEADER = "application/vnd.mx.api.v1+json";
+const API_KEY = getEnvironmentVariable("MX_API_KEY");
+const BASE_PATH = getEnvironmentVariable("MX_BASE_PATH");
+const CLIENT_ID = getEnvironmentVariable("MX_CLIENT_ID");
+
+const configuration = new Configuration({
+    baseOptions: {
+        headers: {
+            Accept: ACCEPT_HEADER
+        }
+    },
+    basePath: BASE_PATH,
+    username: CLIENT_ID,
+    password: API_KEY
+});
+
+const client = new MxPlatformApi(configuration);
+
 /**
- * create a user
- * connect user to an institution (connect)
- * retrieve list of verified accounts
- *
- * --
- *
- * request an access token (https://docs.mx.com/processor_token/guides/processor_guide#access_token)
- * request a connect url (https://docs.mx.com/api#connect_request_a_url) - (https://github.com/mxenabled/web-widget-sdk/blob/HEAD/docs/widget_callback_props.md)
+ * Creates an MX user.
+ * @see {@link https://docs.mx.com/processor_token/guides/client_guide#create_user|Create a User - MX}
  */
+export async function createUser({ email }: CreateUserOptions): Promise<UserResponse | undefined> {
+    return (
+        await client.createUser({
+            user: {
+                id: newUuid(),
+                email
+            }
+        })
+    ).data.user;
+}
+
+/**
+ * Generates a Connect URL that allows the user to connect their FI.
+ * @see {@link https://docs.mx.com/processor_token/guides/client_guide#connect_institution|Connect the User to an Institution - MX}
+ */
+export async function generateWidgetUrl({ userGuid }: GenerateWidgetOptions): Promise<string | undefined> {
+    return (
+        (
+            await client.requestConnectWidgetURL(userGuid, {
+                config: {
+                    mode: "verification",
+                    ui_message_version: 4
+                }
+            })
+        ).data.user?.connect_widget_url ?? undefined
+    );
+}
+
+/**
+ * Lists verified accounts, identified by a member/user GUID.
+ * @see {@link https://docs.mx.com/processor_token/guides/client_guide#verified_institution|Retrieve a List of Verified Accounts - MX}
+ */
+export async function listVerifiedAccounts({
+    memberGuid,
+    userGuid
+}: ListVerifiedAccountsOptions): Promise<AccountNumberResponse[] | undefined> {
+    return (await client.listAccountNumbersByMember(memberGuid, userGuid)).data.account_numbers;
+}
+
+/**
+ * Requests an authorization code from MX that is sent to Dwolla.
+ *
+ * **Note**: This is currently making an Axios request instead of using MX's SDK since this method has not
+ * yet been implemented in their OpenAPI spec. If it's implemented at a later date, though, then this function
+ * should get switched out for the SDK method, provided that one exists.
+ *
+ * @see {@link https://docs.mx.com/api#processor_token_client_endpoints_authorization_code|Request an Authorization Code - MX}
+ */
+export async function requestAuthorizationCode(
+    options: RequestAuthorizationCodeOptions
+): Promise<RequestAuthorizationCodeResponse> {
+    return (
+        await client["axios"].post<RequestAuthorizationCodeResponseBody>(
+            "/payment_processor_authorization_code",
+            {
+                payment_processor_authorization_code: {
+                    account_guid: options.accountGuid,
+                    member_guid: options.memberGuid,
+                    user_guid: options.userGuid
+                }
+            },
+            {
+                auth: {
+                    username: CLIENT_ID,
+                    password: API_KEY
+                },
+                baseURL: BASE_PATH,
+                headers: {
+                    Accept: ACCEPT_HEADER,
+                    "Content-Type": "application/json"
+                }
+            }
+        )
+    ).data.payment_processor_authorization_code;
+}
