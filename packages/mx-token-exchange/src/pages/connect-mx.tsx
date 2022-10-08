@@ -4,10 +4,10 @@ import type { ConnectMemberConnectedPayload } from "@mxenabled/widget-post-messa
 import type { AccountNumberResponse } from "mx-platform-node";
 import type { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
-import type { ParsedUrlQuery} from "querystring";
+import type { ParsedUrlQuery } from "querystring";
 import { stringify as stringifyQueryString } from "querystring";
 import { useWidgetRef } from "../hooks/useWidgetRef";
-import type { GenerateWidgetOptions} from "../integrations/mx";
+import type { GenerateWidgetOptions } from "../integrations/mx";
 import { generateWidgetUrl } from "../integrations/mx";
 import MainLayout from "../layouts/MainLayout";
 import type { MXAccountsAPIQuery, MXAccountsAPIResponse } from "./api/mx/accounts";

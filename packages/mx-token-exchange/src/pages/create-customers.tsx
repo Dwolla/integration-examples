@@ -2,7 +2,7 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Box, Card, CardContent, CardHeader, Grid, TextField } from "@mui/material";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import type { ChangeEvent, FormEvent} from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 import { NetworkState, useNetworkAlert } from "../hooks/useNetworkAlert";
 import type { CreateUnverifiedCustomerOptions } from "../integrations/dwolla";
