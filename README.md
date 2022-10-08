@@ -14,4 +14,5 @@ You can find an exhaustive list of all example apps that this repository contain
 
 To get more information on installing and running a specific app, please click on its name, which will redirect you to its respective README.
 
+* [Finicity](https://github.com/Dwolla/integration-examples/tree/main/packages/finicity-token-exchange#readme)
 * [Plaid](https://github.com/Dwolla/integration-examples/tree/main/packages/plaid-funding-source#readme)

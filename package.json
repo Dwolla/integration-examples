@@ -9,8 +9,10 @@
         "plaid:dev": "pnpm -r --filter \"@example/plaid-funding-source\" dev"
     },
     "devDependencies": {
-        "eslint": "^8.21.0",
-        "eslint-config-next": "^12.2.3",
+        "@typescript-eslint/eslint-plugin": "^5.35.1",
+        "@typescript-eslint/parser": "^5.35.1",
+        "eslint": "^8.22.0",
+        "eslint-config-next": "^12.2.5",
         "eslint-config-prettier": "^8.5.0",
         "next": "^12.2.3",
         "prettier": "^2.7.1",
