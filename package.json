@@ -5,8 +5,11 @@
     "author": "Dwolla, Inc.",
     "private": true,
     "scripts": {
+        "clean": "rimraf node_modules",
+        "clean:all": "pnpm -r clean",
         "install:all": "pnpm -r install",
-        "plaid:dev": "pnpm -r --filter \"@example/plaid-funding-source\" dev"
+        "plaid:dev": "pnpm -r --filter \"@example/plaid-funding-source\" dev",
+        "mx:dev": "pnpm -r --filter \"@example/mx-token-exchange\" dev"
     },
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.35.1",
@@ -16,6 +19,7 @@
         "eslint-config-prettier": "^8.5.0",
         "next": "^12.2.3",
         "prettier": "^2.7.1",
+        "rimraf": "^3.0.2",
         "typescript": "^4.7.4"
     }
 }
