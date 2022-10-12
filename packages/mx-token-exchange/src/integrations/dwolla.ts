@@ -4,7 +4,7 @@ import { getEnvironmentVariable } from "./";
 
 export interface CreateExchangeOptions {
     customerId: string;
-    exchangePartnerId: string;
+    exchangePartnerHref: string;
     token: string;
 }
 
@@ -30,9 +30,17 @@ const client = new Client({
 /**
  * Creates a customer exchange resource using the token that was retrieved from MX.
  */
-export async function createExchange({ customerId, exchangePartnerId, token }: CreateExchangeOptions): Promise<string> {
+export async function createExchange({
+    customerId,
+    exchangePartnerHref,
+    token
+}: CreateExchangeOptions): Promise<string> {
     const response = await client.post(`/customers/${customerId}/exchanges`, {
-        exchangePartnerId,
+        _links: {
+            "exchange-partner": {
+                href: exchangePartnerHref
+            }
+        },
         token
     });
     return response.headers.get("Location");
@@ -68,11 +76,11 @@ export async function createUnverifiedCustomer(options: CreateUnverifiedCustomer
 }
 
 /**
- * Gets MX's exchange partner ID within Dwolla's systems.
+ * Gets MX's exchange partner href (link) within Dwolla's systems.
  */
-export async function getExchangeId(): Promise<string> {
+export async function getExchangeHref(): Promise<string> {
     const response = await client.get("/exchange-partners");
     const partnersList = response.body._embedded["exchange-partners"];
     const mxPartner = partnersList.filter((obj: { name: string }) => equalsIgnoreCase(obj.name, "MX"))[0];
-    return mxPartner.exchangePartnerId;
+    return mxPartner._links.self.href;
 }
