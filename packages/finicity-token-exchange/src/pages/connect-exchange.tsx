@@ -19,12 +19,12 @@ import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 import { NetworkState, useNetworkAlert } from "../hooks/useNetworkAlert";
 import type { CreateExchangeOptions, CreateFundingSourceOptions } from "../integrations/dwolla";
-import { getExchangeId } from "../integrations/dwolla";
+import { getExchangePartnerHref } from "../integrations/dwolla";
 import MainLayout from "../layouts/MainLayout";
 import { getFormValidation } from "../utils";
 
 interface Props {
-    exchangeId: string;
+    exchangePartnerHref: string;
 }
 
 interface Query extends ParsedUrlQuery {
@@ -34,7 +34,7 @@ interface Query extends ParsedUrlQuery {
 
 type FormState = Partial<CreateFundingSourceOptions>;
 
-export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
+export const ConnectExchangePage: NextPage<Props> = ({ exchangePartnerHref }) => {
     const router = useRouter();
 
     const { alert, networkState, updateNetworkAlert } = useNetworkAlert();
@@ -67,7 +67,7 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
             },
             body: JSON.stringify({
                 customerId: dwollaCustomerId,
-                exchangePartnerId: exchangeId,
+                exchangePartnerHref,
                 finicityReceipt: decodedReceipt
             } as CreateExchangeOptions)
         });
@@ -199,11 +199,11 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
  * When the page loads, fetch Finicity's exchange ID from Dwolla and pass it as a prop.
  */
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetServerSidePropsResult<Props>> => {
-    const exchangeId = await getExchangeId();
+    const exchangePartnerHref = await getExchangePartnerHref();
 
     return {
         props: {
-            exchangeId
+            exchangePartnerHref
         }
     };
 };
