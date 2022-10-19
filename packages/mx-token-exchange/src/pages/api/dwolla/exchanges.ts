@@ -17,7 +17,7 @@ export default async function dwollaExchangesApi(
     res: NextApiResponse<DwollaExchangesAPIResponse>
 ) {
     if (!assertRequestMethod("POST", req, res)) return;
-    const body = assertValidBody(req.body, ["customerId", "exchangePartnerId", "token"], res);
+    const body = assertValidBody(req.body, ["customerId", "exchangePartnerHref", "token"], res);
     if (!body) return;
 
     await tryNextResponse(async () => {

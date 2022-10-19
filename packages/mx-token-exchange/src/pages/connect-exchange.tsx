@@ -19,14 +19,14 @@ import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 import { NetworkState, useNetworkAlert } from "../hooks/useNetworkAlert";
 import type { CreateFundingSourceOptions } from "../integrations/dwolla";
-import { getExchangeId } from "../integrations/dwolla";
+import { getExchangeHref } from "../integrations/dwolla";
 import MainLayout from "../layouts/MainLayout";
 import { getMissingKeys } from "../utils";
 import type { DwollaExchangesAPIBody, DwollaExchangesAPIResponse } from "./api/dwolla/exchanges";
 import type { DwollaFundingSourceAPIBody, DwollaFundingSourcesAPIResponse } from "./api/dwolla/funding-sources";
 
 interface Props {
-    exchangeId: string;
+    exchangePartnerHref: string;
 }
 
 interface Query extends ParsedUrlQuery {
@@ -36,7 +36,7 @@ interface Query extends ParsedUrlQuery {
 
 type FormState = Partial<CreateFundingSourceOptions>;
 
-export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
+export const ConnectExchangePage: NextPage<Props> = ({ exchangePartnerHref }) => {
     const router = useRouter();
 
     /**
@@ -82,7 +82,7 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
             },
             body: JSON.stringify({
                 customerId: dwollaCustomerId,
-                exchangePartnerId: exchangeId,
+                exchangePartnerHref,
                 token: processorToken
             } as DwollaExchangesAPIBody)
         });
@@ -214,11 +214,11 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangeId }) => {
  * When the page loads, fetch MX's Exchange Partner ID from Dwolla and pass it as a page prop.
  */
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetServerSidePropsResult<Props>> => {
-    const exchangeId = await getExchangeId();
+    const exchangePartnerHref = await getExchangeHref();
 
     return {
         props: {
-            exchangeId
+            exchangePartnerHref
         }
     };
 };
