@@ -1,7 +1,7 @@
 import { Client } from "dwolla-v2";
 
 export interface CreateExchangeOptions extends WithCustomerId {
-    exchangePartnerId: string;
+    exchangePartnerHref: string;
     finicityReceipt: unknown;
 }
 
@@ -32,11 +32,15 @@ const client = new Client({
  */
 export async function createExchange({
     customerId,
-    exchangePartnerId,
+    exchangePartnerHref,
     finicityReceipt
 }: CreateExchangeOptions): Promise<string> {
     const response = await client.post(`/customers/${customerId}/exchanges`, {
-        exchangePartnerId,
+        _links: {
+            "exchange-partner": {
+                href: exchangePartnerHref
+            }
+        },
         finicity: finicityReceipt
     });
     return response.headers.get("Location");
@@ -74,9 +78,9 @@ export async function createUnverifiedCustomer(options: CreateUnverifiedCustomer
 /**
  * Gets Finicity's exchange partner ID within Dwolla's systems.
  */
-export async function getExchangeId(): Promise<string> {
+export async function getExchangePartnerHref(): Promise<string> {
     const response = await client.get("/exchange-partners");
     const partnersList = response.body._embedded["exchange-partners"];
     const finicityPartner = partnersList.filter((obj: { name: string }) => obj.name === "Finicity")[0];
-    return finicityPartner.exchangePartnerId;
+    return finicityPartner._links.self.href;
 }

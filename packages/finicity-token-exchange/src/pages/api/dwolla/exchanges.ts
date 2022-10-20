@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { assertRequestMethod, assertValidBody, tryWithResponse } from "../../../utils";
 import type { CreateExchangeOptions } from "../../../integrations/dwolla";
 import { createExchange } from "../../../integrations/dwolla";
+import { assertRequestMethod, assertValidBody, tryWithResponse } from "../../../utils";
 
 /**
  * POST: Creates an exchange resource for a customer
@@ -9,7 +9,7 @@ import { createExchange } from "../../../integrations/dwolla";
 export default async function dwollaExchangesApi(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (!assertRequestMethod("POST", req, res)) return;
     const body = req.body as CreateExchangeOptions;
-    if (!assertValidBody(body, ["customerId", "exchangePartnerId", "finicityReceipt"], res)) return;
+    if (!assertValidBody(body, ["customerId", "exchangePartnerHref", "finicityReceipt"], res)) return;
 
     await tryWithResponse(async () => {
         const location = await createExchange({ ...body });
