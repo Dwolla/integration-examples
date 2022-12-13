@@ -33,6 +33,11 @@ const Home: NextPage = () => {
     const [linkToken, setLinkToken] = useState<string | null>(null);
 
     /**
+     * Controls checkbox for on demand authorization
+     */
+    const [isChecked, setIsChecked] = useState<boolean | false>(false);
+
+    /**
      * Create a Plaid Link token and persist it in our component state
      */
     const createLinkToken = useCallback(async () => {
@@ -120,7 +125,7 @@ const Home: NextPage = () => {
         token: linkToken
     });
 
-    const isReady = customerId && fundingSourceName && isPlaidLinkReady;
+    const isReady = customerId && fundingSourceName && isChecked && isPlaidLinkReady;
 
     /**
      * Create a Link Token if one does not already exist
@@ -164,7 +169,18 @@ const Home: NextPage = () => {
                                     placeholder="Enter your Dwolla funding source name"
                                 />
                             </Form.Group>
-
+                            <Form.Group as={Row} className="mb-3" controlId="formGroupFundingSourceName">
+                                <p>
+                                    I agree that future payments to [Client Name] will be processed by the Dwolla
+                                    payment system from the selected account above. In order to cancel this
+                                    authorization, I will change my payment settings within my [End User Name] account.
+                                </p>
+                                <Form.Check
+                                    label="Agree and continue"
+                                    checked={isChecked}
+                                    onChange={(e) => setIsChecked(e.target.checked)}
+                                />
+                            </Form.Group>
                             <Form.Group as={Row} className="mb-3" controlId="formGroupOpenPlaidLink">
                                 <Button type="button" disabled={!isReady} onClick={() => openPlaidLink()}>
                                     Open Plaid Link — Institution Select
