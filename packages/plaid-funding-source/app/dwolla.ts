@@ -39,3 +39,11 @@ export const createFundingSource = async (options: CreateFundingSourceOptions) =
         console.error("Creating a Funding Source Failed: ", err);
     }
 };
+
+export const createOnDemandAuthorization = async () => {
+    try {
+        return await dwollaClient.post("on-demand-authorizations");
+    } catch (err) {
+        console.error("Creating an On Demand Authorization Failed: ", err);
+    }
+};
