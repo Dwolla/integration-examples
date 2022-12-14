@@ -33,6 +33,21 @@ const Home: NextPage = () => {
     const [linkToken, setLinkToken] = useState<string | null>(null);
 
     /**
+     * The body text that is returned from the /on-demand-authorizations endpoint
+     */
+    const [bodyText, setBodyText] = useState<string | null>(null);
+
+    /**
+     * The button text that is returned from the /on-demand-authorizations endpoint
+     */
+    const [buttonText, setButtonText] = useState<string | null>(null);
+
+    /**
+     * The ODA link that is returned from the /on-demand-authorizations endpoint
+     */
+    const [odaLink, setOdaLink] = useState<string | null>(null);
+
+    /**
      * Controls checkbox for on demand authorization
      */
     const [isChecked, setIsChecked] = useState<boolean | false>(false);
@@ -95,7 +110,8 @@ const Home: NextPage = () => {
                 body: JSON.stringify({
                     customerId: customerIdRef.current,
                     fundingSourceName: fundingSourceNameRef.current,
-                    plaidToken: processorToken
+                    plaidToken: processorToken,
+                    onDemandAuthLink: odaLink
                 } as CreateFundingSourceOptions)
             });
 
@@ -136,6 +152,20 @@ const Home: NextPage = () => {
         }
     }, [createLinkToken, linkToken]);
 
+    /**
+     * Inital request to create ODA when page loads
+     */
+    useEffect(() => {
+        const onDemandAuthRequuest = async () => {
+            const response = await fetch("/api/dwolla/create-on-demand-auth", { method: "POST" });
+            const data = await response.json();
+            setBodyText(data.body.bodyText);
+            setButtonText(data.body.buttonText);
+            setOdaLink(data.body._links.self.href);
+        };
+        onDemandAuthRequuest();
+    }, []);
+
     return (
         <>
             <Head>
@@ -170,13 +200,9 @@ const Home: NextPage = () => {
                                 />
                             </Form.Group>
                             <Form.Group as={Row} className="mb-3" controlId="formGroupFundingSourceName">
-                                <p>
-                                    I agree that future payments to [Client Name] will be processed by the Dwolla
-                                    payment system from the selected account above. In order to cancel this
-                                    authorization, I will change my payment settings within my [End User Name] account.
-                                </p>
+                                <p>{bodyText}</p>
                                 <Form.Check
-                                    label="Agree and continue"
+                                    label={buttonText}
                                     checked={isChecked}
                                     onChange={(e) => setIsChecked(e.target.checked)}
                                 />
