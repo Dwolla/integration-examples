@@ -45,7 +45,7 @@ const Home: NextPage = () => {
     /**
      * The ODA link that is returned from the /on-demand-authorizations endpoint
      */
-    const [odaLink, setOdaLink] = useState<string | null>(null);
+    const [odaLink, setOdaLink, odaLinkRef] = useState<string | null>(null);
 
     /**
      * Controls checkbox for on demand authorization
@@ -111,7 +111,11 @@ const Home: NextPage = () => {
                     customerId: customerIdRef.current,
                     fundingSourceName: fundingSourceNameRef.current,
                     plaidToken: processorToken,
-                    onDemandAuthLink: odaLink
+                    _links: {
+                        "on-demand-authorizations": {
+                            href: odaLinkRef.current
+                        }
+                    }
                 } as CreateFundingSourceOptions)
             });
 
