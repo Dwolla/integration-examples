@@ -50,7 +50,7 @@ const Home: NextPage = () => {
     /**
      * Controls checkbox for on demand authorization
      */
-    const [isChecked, setIsChecked] = useState<boolean | false>(false);
+    const [checked, setChecked] = useState<boolean>(false);
 
     /**
      * Create a Plaid Link token and persist it in our component state
@@ -145,7 +145,7 @@ const Home: NextPage = () => {
         token: linkToken
     });
 
-    const isReady = customerId && fundingSourceName && isChecked && isPlaidLinkReady;
+    const isReady = customerId && fundingSourceName && checked && odaLink && isPlaidLinkReady;
 
     /**
      * Create a Link Token if one does not already exist
@@ -160,14 +160,14 @@ const Home: NextPage = () => {
      * Inital request to create ODA when page loads
      */
     useEffect(() => {
-        const onDemandAuthRequuest = async () => {
+        const onDemandAuthRequest = async () => {
             const response = await fetch("/api/dwolla/create-on-demand-auth", { method: "POST" });
             const data = await response.json();
             setBodyText(data.body.bodyText);
             setButtonText(data.body.buttonText);
             setOdaLink(data.body._links.self.href);
         };
-        onDemandAuthRequuest();
+        onDemandAuthRequest();
     }, []);
 
     return (
@@ -195,7 +195,7 @@ const Home: NextPage = () => {
                                 />
                             </Form.Group>
 
-                            <Form.Group as={Row} className="mb-3" controlId="formGroupFundingSourceName">
+                            <Form.Group as={Row} className="mb-3" controlId="formGroupOnDemandChecked">
                                 <Form.Label>Funding Source Name</Form.Label>
                                 <Form.Control
                                     type="text"
@@ -207,8 +207,8 @@ const Home: NextPage = () => {
                                 <p>{bodyText}</p>
                                 <Form.Check
                                     label={buttonText}
-                                    checked={isChecked}
-                                    onChange={(e) => setIsChecked(e.target.checked)}
+                                    checked={checked}
+                                    onChange={(e) => setChecked(e.target.checked)}
                                 />
                             </Form.Group>
                             <Form.Group as={Row} className="mb-3" controlId="formGroupOpenPlaidLink">
