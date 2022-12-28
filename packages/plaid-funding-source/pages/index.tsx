@@ -33,6 +33,26 @@ const Home: NextPage = () => {
     const [linkToken, setLinkToken] = useState<string | null>(null);
 
     /**
+     * The body text that is returned from the /on-demand-authorizations endpoint
+     */
+    const [bodyText, setBodyText] = useState<string | null>(null);
+
+    /**
+     * The button text that is returned from the /on-demand-authorizations endpoint
+     */
+    const [buttonText, setButtonText] = useState<string | null>(null);
+
+    /**
+     * The ODA link that is returned from the /on-demand-authorizations endpoint
+     */
+    const [odaLink, setOdaLink, odaLinkRef] = useState<string | null>(null);
+
+    /**
+     * Controls checkbox for on demand authorization
+     */
+    const [checked, setChecked] = useState<boolean>(false);
+
+    /**
      * Create a Plaid Link token and persist it in our component state
      */
     const createLinkToken = useCallback(async () => {
@@ -90,7 +110,12 @@ const Home: NextPage = () => {
                 body: JSON.stringify({
                     customerId: customerIdRef.current,
                     fundingSourceName: fundingSourceNameRef.current,
-                    plaidToken: processorToken
+                    plaidToken: processorToken,
+                    _links: {
+                        "on-demand-authorizations": {
+                            href: odaLinkRef.current
+                        }
+                    }
                 } as CreateFundingSourceOptions)
             });
 
@@ -120,7 +145,7 @@ const Home: NextPage = () => {
         token: linkToken
     });
 
-    const isReady = customerId && fundingSourceName && isPlaidLinkReady;
+    const isReady = customerId && fundingSourceName && checked && odaLink && isPlaidLinkReady;
 
     /**
      * Create a Link Token if one does not already exist
@@ -130,6 +155,20 @@ const Home: NextPage = () => {
             createLinkToken().catch((err) => console.error(err));
         }
     }, [createLinkToken, linkToken]);
+
+    /**
+     * Inital request to create ODA when page loads
+     */
+    useEffect(() => {
+        const onDemandAuthRequest = async () => {
+            const response = await fetch("/api/dwolla/create-on-demand-auth", { method: "POST" });
+            const data = await response.json();
+            setBodyText(data.body.bodyText);
+            setButtonText(data.body.buttonText);
+            setOdaLink(data.body._links.self.href);
+        };
+        onDemandAuthRequest();
+    }, []);
 
     return (
         <>
@@ -156,7 +195,7 @@ const Home: NextPage = () => {
                                 />
                             </Form.Group>
 
-                            <Form.Group as={Row} className="mb-3" controlId="formGroupFundingSourceName">
+                            <Form.Group as={Row} className="mb-3" controlId="formGroupOnDemandChecked">
                                 <Form.Label>Funding Source Name</Form.Label>
                                 <Form.Control
                                     type="text"
@@ -164,7 +203,14 @@ const Home: NextPage = () => {
                                     placeholder="Enter your Dwolla funding source name"
                                 />
                             </Form.Group>
-
+                            <Form.Group as={Row} className="mb-3" controlId="formGroupFundingSourceName">
+                                <p>{bodyText}</p>
+                                <Form.Check
+                                    label={buttonText}
+                                    checked={checked}
+                                    onChange={(e) => setChecked(e.target.checked)}
+                                />
+                            </Form.Group>
                             <Form.Group as={Row} className="mb-3" controlId="formGroupOpenPlaidLink">
                                 <Button type="button" disabled={!isReady} onClick={() => openPlaidLink()}>
                                     Open Plaid Link — Institution Select

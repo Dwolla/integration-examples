@@ -4,6 +4,7 @@ export interface CreateFundingSourceOptions {
     customerId: string; // Dwolla Customer ID
     fundingSourceName: string; // Dwolla Funding Source Name
     plaidToken: string; // Plaid Account Processor Token
+    _links: object; // Dwolla On Demand Authorization Link
 }
 
 const getEnvironment = (): "production" | "sandbox" => {
@@ -36,5 +37,13 @@ export const createFundingSource = async (options: CreateFundingSourceOptions) =
         });
     } catch (err) {
         console.error("Creating a Funding Source Failed: ", err);
+    }
+};
+
+export const createOnDemandAuthorization = async () => {
+    try {
+        return await dwollaClient.post("on-demand-authorizations");
+    } catch (err) {
+        console.error("Creating an On Demand Authorization Failed: ", err);
     }
 };

@@ -3,9 +3,9 @@ import { createFundingSource, CreateFundingSourceOptions } from "../../../app/dw
 
 export default async function createFundingSourceApi(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "POST") {
-        const { customerId, fundingSourceName, plaidToken } = req.body as CreateFundingSourceOptions;
+        const { customerId, fundingSourceName, plaidToken, _links } = req.body as CreateFundingSourceOptions;
 
-        if (customerId && fundingSourceName && plaidToken) {
+        if (customerId && fundingSourceName && plaidToken && _links) {
             const response = await createFundingSource(req.body);
             return res.status(200).json({ location: response?.headers?.get("Location") });
         }
