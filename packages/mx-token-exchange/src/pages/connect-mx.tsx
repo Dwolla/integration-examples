@@ -72,7 +72,7 @@ export const ConnectMxPage: NextPage<Props> = ({ widgetUrl }) => {
         });
 
         if (!response.ok) return undefined;
-        return ((await response.json()) as MXProcessorTokenAPIResponse).token?.authorization_code;
+        return ((await response.json()) as MXProcessorTokenAPIResponse).token?.code;
     }
 
     /**

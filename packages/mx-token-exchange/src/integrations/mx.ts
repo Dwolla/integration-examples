@@ -22,11 +22,11 @@ export interface RequestAuthorizationCodeOptions {
 }
 
 export interface RequestAuthorizationCodeResponse {
-    readonly authorization_code?: string;
+    readonly code?: string;
 }
 
 export interface RequestAuthorizationCodeResponseBody {
-    readonly payment_processor_authorization_code: RequestAuthorizationCodeResponse;
+    readonly authorization_code: RequestAuthorizationCodeResponse;
 }
 
 const ACCEPT_HEADER = "application/vnd.mx.api.v1+json";
@@ -104,12 +104,10 @@ export async function requestAuthorizationCode(
 ): Promise<RequestAuthorizationCodeResponse> {
     return (
         await client["axios"].post<RequestAuthorizationCodeResponseBody>(
-            "/payment_processor_authorization_code",
+            "/authorization_code",
             {
-                payment_processor_authorization_code: {
-                    account_guid: options.accountGuid,
-                    member_guid: options.memberGuid,
-                    user_guid: options.userGuid
+                authorization_code: {
+                    scope: `account-guid:${options.accountGuid} member-guid:${options.memberGuid} user-guid:${options.userGuid} read-protected`
                 }
             },
             {
@@ -124,5 +122,5 @@ export async function requestAuthorizationCode(
                 }
             }
         )
-    ).data.payment_processor_authorization_code;
+    ).data.authorization_code;
 }
