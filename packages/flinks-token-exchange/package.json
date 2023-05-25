@@ -1,0 +1,43 @@
+{
+    "name": "@example/flinks-token-exchange",
+    "version": "1.0.0",
+    "description": "Dwolla integration example that uses the Secure Token Exchange to verify a customer's bank account using Flinks",
+    "license": "MIT",
+    "author": "Dwolla, Inc.",
+    "scripts": {
+        "build": "next build",
+        "checks": "../../node_modules/.bin/tsc --pretty --noEmit && pnpm lint && pnpm prettier:check",
+        "clean": "../../node_modules/.bin/rimraf \"{.next,node_modules,tsconfig.tsbuildinfo}\"",
+        "dev": "next dev",
+        "format": "../../node_modules/.bin/prettier --config ../../.prettierrc.json --write \"src/**/*.+(ts|tsx)\"",
+        "lint": "next lint --config ../../.eslintrc.json",
+        "lint:fix": "next lint --config ../../.eslintrc.json --fix",
+        "prettier:check": "../../node_modules/.bin/prettier --check --config ../../.prettierrc.json \"src/**/*.+(ts|tsx)\"",
+        "prettier:write": "../../node_modules/.bin/prettier --config ../../.prettierrc.json \"src/**/*.+(ts|tsx)\" --write",
+        "start": "next start"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.19.3",
+        "@types/node": "18.8.3",
+        "@types/react": "18.0.21",
+        "@types/react-dom": "18.0.6",
+        "@types/uuid": "^8.3.4"
+    },
+    "dependencies": {
+        "@emotion/cache": "^11.10.3",
+        "@emotion/react": "^11.10.4",
+        "@emotion/server": "^11.10.0",
+        "@emotion/styled": "^11.10.4",
+        "@mui/icons-material": "^5.10.6",
+        "@mui/lab": "5.0.0-alpha.102",
+        "@mui/material": "^5.10.8",
+        "axios": "^0.27.2",
+        "dwolla-v2": "4.0.0-ts-alpha.0",
+        "form-data": "^4.0.0",
+        "next": "12.3.1",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "usehooks-ts": "^2.9.1",
+        "uuid": "^9.0.0"
+    }
+}
