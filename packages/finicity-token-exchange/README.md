@@ -1,6 +1,6 @@
-# Dwolla and Finicity Secure Token Exchange
+# Dwolla and Finicity - Secure Exchange
 
-This example project, built using [Next.js](https://nextjs.org/), demonstrates how a Funding Source can be created for a Dwolla Customer using Dwolla's integration with Finicity and Dwolla's Secure Token Exchange. By doing this, Dwolla is able to instantly verify the Funding Source without the need for your application to transmit sensitive data. (All the sensitive data is retrieved directly from Finicity.)
+This example project, built using [Next.js](https://nextjs.org/), demonstrates how a Funding Source can be created for a Dwolla Customer using Dwolla's integration with Mastercard's [Open Banking](https://developer.mastercard.com/open-banking-us/documentation) and Dwolla's [Secure Exchange](https://developers.dwolla.com/docs/balance/secure-exchange) solution. By doing this, Dwolla is able to instantly verify the Funding Source without the need for your application to transmit sensitive data. (All the sensitive data is retrieved directly from Mastercard.)
 
 ## Notes
 
@@ -9,7 +9,7 @@ This example project, built using [Next.js](https://nextjs.org/), demonstrates h
 
 ## Setup
 
-1. Create a [Dwolla Sandbox Account](https://accounts-sandbox.dwolla.com/sign-up) and a [Finicity Account](https://signup.finicity.com/).
+1. Create a [Dwolla Sandbox Account](https://accounts-sandbox.dwolla.com/sign-up) and a [Mastercard Developers Account](https://developer.mastercard.com/open-banking-us/documentation/quick-start-guide/#1-generate-your-credentials).
 2. Rename `.env.local.example` to `.env.local`, and enter the necessary access keys for both Dwolla and Finicity.
 3. In your terminal, `cd` into the project directory (`finicity-token-exchange`) and execute the following commands:
    1. `pnpm install` - This will install all necessary dependencies, minus Finicity's SDK
@@ -21,4 +21,4 @@ This example project, built using [Next.js](https://nextjs.org/), demonstrates h
 
 ## Using Finicity Connect
 
-When using Finicity Connect in a development environment, you may search for FinBank and enter *profile_09* for both the username and password. For more information, please [see step 3.3 on Finicity's website](https://docs.finicity.com/#welcome-your-first-customer).
+When using Finicity Connect in a development environment, you may search for FinBank and enter *profile_09* for both the username and password. For more information, please [see bank account profiles on Finicity's website](https://developer.mastercard.com/open-banking-us/documentation/test-the-apis/#bank-account-profiles).
