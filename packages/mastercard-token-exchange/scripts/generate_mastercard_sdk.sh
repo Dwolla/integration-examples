@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# Raw API URL for Finicity's OpenAPI YAML file
-# Extracted from https://docs.finicity.com/#generate-an-api-client-library
-API_RAW_URL=https://raw.githubusercontent.com/Finicity-Mastercard/finicity-openapi/main/finicity.yaml
+# Raw API URL for Mastercard's OpenAPI YAML file
+# Extracted from https://developer.mastercard.com/open-banking-us/documentation/quick-start-guide/#5-generate-an-api-client-library
+API_RAW_URL=https://static.developer.mastercard.com/content/open-banking-us/swagger/openbanking-us.yaml
 
 # SDK directory path, relative to root
-PACKAGE_DIR=sdks/finicity
+PACKAGE_DIR=sdks/mastercard
 
 # Path to output directory, relative to scripts
 OUTPUT_DIR="../$PACKAGE_DIR"
@@ -43,8 +43,8 @@ fi
 mkdir -p $OUTPUT_DIR
 cd $OUTPUT_DIR || exit
 
-# Download Finicity API from GitHub
-curl -L -o finicity-api.yaml $API_RAW_URL
+# Download Mastercard API from GitHub
+curl -L -o mastercard-open-banking-us-openapi.yaml $API_RAW_URL
 
 # Check if OpenAPI Generator is already installed
 pnpm list --depth 0 -g | grep -q $OPENAPI_GENERATOR_PACKAGE
@@ -57,13 +57,13 @@ fi
 
 # Generate the SDK using OpenAPI Generator
 openapi-generator-cli generate -g typescript-axios \
-  --additional-properties=npmName=@finicity/node-sdk,withInterfaces=true,withNodeImports=true \
+  --additional-properties=npmName=@mastercard/node-sdk,withInterfaces=true,withNodeImports=true \
   -i ./*.yaml \
   -o ./
 
 # Remove old SDK, if one was present
 cd ../../
-pnpm remove @finicity/node-sdk
+pnpm remove @mastercard/node-sdk
 
 # Build new SDK
 cd $PACKAGE_DIR || exit

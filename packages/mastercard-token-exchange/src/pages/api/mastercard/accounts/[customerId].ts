@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { GetCustomerAccountsOptions } from "../../../../integrations/finicity";
-import { getCustomerAccounts } from "../../../../integrations/finicity";
+import type { GetCustomerAccountsOptions } from "../../../../integrations/mastercard";
+import { getCustomerAccounts } from "../../../../integrations/mastercard";
 import { assertRequestMethod, tryWithResponse } from "../../../../utils";
 
 /**
  * GET: Fetches customer accounts via a customer ID
  */
-export default async function finicityAccountsApi(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function mastercardAccountsApi(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (!assertRequestMethod("GET", req, res)) return;
     const { customerId } = req.query as unknown as GetCustomerAccountsOptions;
 

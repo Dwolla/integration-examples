@@ -2,7 +2,7 @@ import { Client } from "dwolla-v2";
 
 export interface CreateExchangeOptions extends WithCustomerId {
     exchangePartnerHref: string;
-    finicityReceipt: unknown;
+    mastercardReceipt: unknown;
 }
 
 export interface CreateFundingSourceOptions extends WithCustomerId {
@@ -28,12 +28,12 @@ const client = new Client({
 });
 
 /**
- * Creates a customer exchange resource using the receipt that was retrieved from Finicity.
+ * Creates a customer exchange resource using the receipt that was retrieved from Mastercard.
  */
 export async function createExchange({
     customerId,
     exchangePartnerHref,
-    finicityReceipt
+    mastercardReceipt
 }: CreateExchangeOptions): Promise<string> {
     const response = await client.post(`/customers/${customerId}/exchanges`, {
         _links: {
@@ -41,7 +41,7 @@ export async function createExchange({
                 href: exchangePartnerHref
             }
         },
-        finicity: finicityReceipt
+        finicity: mastercardReceipt
     });
     return response.headers.get("Location");
 }
@@ -76,11 +76,11 @@ export async function createUnverifiedCustomer(options: CreateUnverifiedCustomer
 }
 
 /**
- * Gets Finicity's exchange partner ID within Dwolla's systems.
+ * Gets Mastercard's exchange partner ID within Dwolla's systems.
  */
 export async function getExchangePartnerHref(): Promise<string> {
     const response = await client.get("/exchange-partners");
     const partnersList = response.body._embedded["exchange-partners"];
-    const finicityPartner = partnersList.filter((obj: { name: string }) => obj.name === "Finicity")[0];
-    return finicityPartner._links.self.href;
+    const mastercardPartner = partnersList.filter((obj: { name: string }) => obj.name === "Finicity")[0];
+    return mastercardPartner._links.self.href;
 }

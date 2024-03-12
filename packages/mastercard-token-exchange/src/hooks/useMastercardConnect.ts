@@ -53,31 +53,31 @@ type FinicityWindow = Window &
         };
     };
 
-// https://docs.finicity.com/c_connect-web-2-0-embed-iframe/#connect-web-embed-2
-const FINICITY_CONNECT_URL = "https://connect2.finicity.com/assets/sdk/finicity-connect.min.js";
+// https://connect2.finicity.com/assets/sdk/finicity-connect.min.js
+const MASTERCARD_CONNECT_URL = "https://connect2.finicity.com/assets/sdk/finicity-connect.min.js";
 
-// Extracted from FINICITY_CONNECT_URL above
-const FINICITY_IFRAME_ID = "finicityConnectIframe";
+// Extracted from MASTERCARD_CONNECT_URL above
+const MASTERCARD_IFRAME_ID = "finicityConnectIframe";
 
 const noop = () => undefined;
 
-export const useFinicityConnect = (options: ConnectOptions) => {
-    // Load Finicity's script from their CDN
+export const useMastercardConnect = (options: ConnectOptions) => {
+    // Load Mastercard's script from their CDN
     const [loading, error] = useScript({
         checkForExisting: true,
-        src: FINICITY_CONNECT_URL
+        src: MASTERCARD_CONNECT_URL
     });
 
     /**
      * Creates a `<style>` tag that is the entire height and width of the page, and applies it to the
-     * `<head>` element of the page. Finicity Connect already does this; however, `DOMContentLoaded`
+     * `<head>` element of the page. Mastercard Connect already does this; however, `DOMContentLoaded`
      * is not a good way to detect if the DOM has loaded when using React/Next, and it often breaks,
      * leaving its implementor(s) uncalled.
      */
     function applyStyles() {
         const style = document.createElement("style");
         style.setAttribute("type", "text/css");
-        style.innerHTML = `#${FINICITY_IFRAME_ID} {
+        style.innerHTML = `#${MASTERCARD_IFRAME_ID} {
             background: rgba(0, 0, 0, 0.8);
             height: 100vh;
             left: 0;
@@ -92,7 +92,7 @@ export const useFinicityConnect = (options: ConnectOptions) => {
     }
 
     /**
-     * Destroys Finicity Connect
+     * Destroys Mastercard Connect
      * @see {@link https://docs.finicity.com/c_connect-web-2-0-embed-iframe/#connect-web-embed-5|Connect Web 2.0 Embed iFrame}
      */
     function destroy() {
@@ -106,14 +106,14 @@ export const useFinicityConnect = (options: ConnectOptions) => {
      */
     function failNoWindow() {
         if (typeof window === "undefined") {
-            console.error("useFinicityConnect: Failed to perform operation. `window` is not defined.");
+            console.error("useMastercardConnect: Failed to perform operation. `window` is not defined.");
             return true;
         }
         return false;
     }
 
     /**
-     * Launches Finicity Connect to the specified URL.
+     * Launches Mastercard Connect to the specified URL.
      * @param options - Configuration options that are used to create Connect's iFrame
      */
     function launch({ destroyPrevious = true, url }: ConnectLaunchOptions) {

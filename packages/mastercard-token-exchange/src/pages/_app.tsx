@@ -16,7 +16,7 @@ function MyApp({ Component, emotionCache = clientSideEmotionCache, pageProps }: 
     return (
         <CacheProvider value={emotionCache}>
             <Head>
-                <title>Dwolla & Finicity - Token Exchange Example</title>
+                <title>Dwolla & Mastercard - Secure Exchange Example</title>
                 <meta name="viewport" content="initial-scale=1, width=device-width" />
             </Head>
             <ThemeProvider theme={theme}>

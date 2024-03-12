@@ -1,7 +1,7 @@
 {
-    "name": "@example/finicity-token-exchange",
+    "name": "@example/mastercard-token-exchange",
     "version": "1.0.0",
-    "description": "Dwolla integration example that uses the Secure Token Exchange to verify a customer's bank account using Finicity",
+    "description": "Dwolla integration example that uses the Secure Token Exchange to verify a customer's bank account using Mastercard",
     "license": "MIT",
     "author": "Dwolla, Inc.",
     "scripts": {
@@ -26,7 +26,7 @@
         "@emotion/react": "^11.10.0",
         "@emotion/server": "^11.10.0",
         "@emotion/styled": "^11.10.0",
-        "@finicity/node-sdk": "link:sdks/finicity",
+        "@mastercard/node-sdk": "link:sdks/mastercard",
         "@mui/icons-material": "^5.10.2",
         "@mui/lab": "5.0.0-alpha.96",
         "@mui/material": "^5.10.2",
