@@ -14,7 +14,7 @@ You can find an exhaustive list of all example apps that this repository contain
 
 To get more information on installing and running a specific app, please click on its name, which will redirect you to its respective README.
 
-* [Finicity](https://github.com/Dwolla/integration-examples/tree/main/packages/finicity-token-exchange#readme)
+* [Mastercard](https://github.com/Dwolla/integration-examples/tree/main/packages/mastercard-token-exchange#readme)
 * [Plaid](https://github.com/Dwolla/integration-examples/tree/main/packages/plaid-funding-source#readme)
 * [MX](https://github.com/Dwolla/integration-examples/tree/main/packages/mx-token-exchange#readme)
 * [Flinks](https://github.com/Dwolla/integration-examples/tree/main/packages/flinks-token-exchange#readme)

@@ -6,7 +6,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 import { NetworkState, useNetworkAlert } from "../hooks/useNetworkAlert";
 import type { CreateUnverifiedCustomerOptions } from "../integrations/dwolla";
-import type { CreateCustomerOptions } from "../integrations/finicity";
+import type { CreateCustomerOptions } from "../integrations/mastercard";
 import MainLayout from "../layouts/MainLayout";
 import { getMissingKeys, uuidFromUrl } from "../utils";
 
@@ -62,10 +62,10 @@ const CreateCustomerPage: NextPage = () => {
     }
 
     /**
-     * Calls our API to create a customer record with Finicity.
+     * Calls our API to create a customer record with Mastercard.
      */
-    async function createFinicityCustomer(): Promise<string | null> {
-        const response = await fetch("/api/finicity/customers", {
+    async function createMastercardCustomer(): Promise<string | null> {
+        const response = await fetch("/api/mastercard/customers", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -80,7 +80,7 @@ const CreateCustomerPage: NextPage = () => {
     }
 
     /**
-     * Creates a Dwolla and Finicity customer when the form submits.
+     * Creates a Dwolla and Mastercard customer when the form submits.
      */
     async function handleFormSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
         event.preventDefault();
@@ -96,18 +96,18 @@ const CreateCustomerPage: NextPage = () => {
             );
         }
 
-        const finicityCustomerId = await createFinicityCustomer();
+        const mastercardCustomerId = await createMastercardCustomer();
 
-        if (!finicityCustomerId) {
+        if (!mastercardCustomerId) {
             return updateNetworkAlert(
-                { severity: "error", message: "No customer ID was returned from createFinicityCustomer()" },
+                { severity: "error", message: "No customer ID was returned from createMastercardCustomer()" },
                 NetworkState.NOT_LOADING
             );
         }
 
         await router.push({
-            pathname: "/connect-finicity",
-            query: { dwollaCustomerId, finicityCustomerId }
+            pathname: "/connect-mastercard",
+            query: { dwollaCustomerId, mastercardCustomerId: mastercardCustomerId }
         });
     }
 

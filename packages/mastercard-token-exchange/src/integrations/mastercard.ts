@@ -1,6 +1,6 @@
-import type { CustomerAccount } from "@finicity/node-sdk";
-import { AccountsApi, AuthenticationApi, Configuration, ConnectApi, CustomersApi } from "@finicity/node-sdk";
-import type { BaseAPI } from "@finicity/node-sdk/dist/base";
+import type { CustomerAccount } from "@mastercard/node-sdk";
+import { AccountsApi, AuthenticationApi, Configuration, ConnectApi, CustomersApi } from "@mastercard/node-sdk";
+import type { BaseAPI } from "@mastercard/node-sdk/dist/base";
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
 
@@ -21,16 +21,16 @@ interface WithCustomerId {
 
 type Constructable<APIType extends BaseAPI> = { new (...args: any[]): APIType };
 
-// Dwolla's hardcoded Finicity partner ID
+// Dwolla's hardcoded Mastercard partner ID
 const DWOLLA_PARTNER_ID = "2445583946651";
 
-// NOTE: Once Finicity has this endpoint documented, that should be used instead.
+// NOTE: Once Mastercard has this endpoint documented, that should be used instead.
 // This is only being used since the OpenAPI spec does not currently export this endpoint.
-const FINICITY_PARTNER_CONSENT_URL = "https://api.finicity.com/aggregation/v1/partners/accessKey";
+const MASTERCARD_PARTNER_CONSENT_URL = "https://api.finicity.com/aggregation/v1/partners/accessKey";
 
 const axiosRequestConfig: AxiosRequestConfig = {
     headers: {
-        "Finicity-App-Key": process.env.FINICITY_APP_KEY as string
+        "Finicity-App-Key": process.env.MASTERCARD_APP_KEY as string
     }
 };
 
@@ -39,7 +39,7 @@ const { create: createInterceptor } = withTokenInterceptor();
 const { getCurrent: getCurrentToken, getExpiration: getTokenExpiration, refresh: refreshToken } = withTokenManager();
 
 /**
- * Creates a testing customer in Finicity. This is required for all other API calls.
+ * Creates a testing customer in Mastercard. This is required for all other API calls.
  */
 export async function createTestingCustomer(options: CreateCustomerOptions): Promise<string> {
     const customersClient = await getApiWithInterceptor(CustomersApi);
@@ -48,7 +48,7 @@ export async function createTestingCustomer(options: CreateCustomerOptions): Pro
 }
 
 /**
- * Fetches the partner consent for Dwolla from Finicity, given the bank account ID and customer ID.
+ * Fetches the partner consent for Dwolla from Mastercard, given the bank account ID and customer ID.
  */
 export async function fetchPartnerConsent({ accountId, customerId }: FetchPartnerConsentOptions): Promise<any> {
     await createInterceptor();
@@ -57,14 +57,14 @@ export async function fetchPartnerConsent({ accountId, customerId }: FetchPartne
     const startTime = date.toISOString();
     const endTime = incrementOneMonth(date).toISOString();
 
-    const response = await axiosInstance.post(FINICITY_PARTNER_CONSENT_URL, {
+    const response = await axiosInstance.post(MASTERCARD_PARTNER_CONSENT_URL, {
         customerId,
-        partnerId: process.env.FINICITY_PARTNER_ID as string,
+        partnerId: process.env.MASTERCARD_PARTNER_ID as string,
         thirdPartyPartnerId: DWOLLA_PARTNER_ID,
         products: [
             {
                 product: "moneyTransferDetails",
-                payorId: process.env.FINICITY_PARTNER_ID as string,
+                payorId: process.env.MASTERCARD_PARTNER_ID as string,
                 accountId,
                 maxCalls: 10,
                 accessPeriod: {
@@ -79,13 +79,13 @@ export async function fetchPartnerConsent({ accountId, customerId }: FetchPartne
 }
 
 /**
- * Generates a Connect URL that is used to allow the customer to connect their bank accounts with Finicity.
+ * Generates a Connect URL that is used to allow the customer to connect their bank accounts with Mastercard.
  */
 export async function generateConnectUrl({ customerId }: GenerateConnectUrlOptions): Promise<string> {
     const connectClient = await getApiWithInterceptor(ConnectApi);
     const response = await connectClient.generateConnectUrl({
         customerId,
-        partnerId: process.env.FINICITY_PARTNER_ID as string
+        partnerId: process.env.MASTERCARD_PARTNER_ID as string
     });
     return response.data.link;
 }
@@ -118,7 +118,7 @@ function incrementOneMonth(date: Date) {
 
 /**
  * Closure that manages the interceptor for Axios requests. When an interceptor is added to Axios, upon each
- * request to Finicity, an app token is injected as the Finicity-App-Token header.
+ * request to Mastercard, an app token is injected as the Finicity-App-Token header.
  */
 function withTokenInterceptor(): { create: () => Promise<void> } {
     let hasInjected = false;
@@ -141,7 +141,7 @@ function withTokenInterceptor(): { create: () => Promise<void> } {
 }
 
 /**
- * Closure that manages Finicity's token, with additional functions that can be used to get
+ * Closure that manages Mastercard's token, with additional functions that can be used to get
  * the value of the current token, get when the current token expires, and refresh the token.
  */
 function withTokenManager(): {
@@ -162,8 +162,8 @@ function withTokenManager(): {
         refresh: async function (): Promise<void> {
             const authClient = new AuthenticationApi(new Configuration({ baseOptions: axiosRequestConfig }));
             const newToken = await authClient.createToken({
-                partnerId: process.env.FINICITY_PARTNER_ID as string,
-                partnerSecret: process.env.FINICITY_PARTNER_SECRET as string
+                partnerId: process.env.MASTERCARD_PARTNER_ID as string,
+                partnerSecret: process.env.MASTERCARD_SECRET as string
             });
 
             currentToken = newToken.data.token;

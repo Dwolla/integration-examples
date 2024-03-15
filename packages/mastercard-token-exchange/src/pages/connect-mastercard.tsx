@@ -1,12 +1,12 @@
-import type { CustomerAccount } from "@finicity/node-sdk";
+import type { CustomerAccount } from "@mastercard/node-sdk";
 import { Card, CardContent, CardHeader, LinearProgress, Typography } from "@mui/material";
 import type { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
 import type { ParsedUrlQuery } from "querystring";
 import { useState } from "react";
-import { useFinicityConnect } from "../hooks/useFinicityConnect";
-import type { FetchPartnerConsentOptions, GenerateConnectUrlOptions } from "../integrations/finicity";
-import { generateConnectUrl } from "../integrations/finicity";
+import { useMastercardConnect } from "../hooks/useMastercardConnect";
+import type { FetchPartnerConsentOptions, GenerateConnectUrlOptions } from "../integrations/mastercard";
+import { generateConnectUrl } from "../integrations/mastercard";
 import MainLayout from "../layouts/MainLayout";
 
 interface Props {
@@ -15,15 +15,15 @@ interface Props {
 
 interface Query extends ParsedUrlQuery {
     dwollaCustomerId: string;
-    finicityCustomerId: string;
+    mastercardCustomerId: string;
 }
 
-export const ConnectFinicityPage: NextPage<Props> = ({ connectUrl }) => {
+export const ConnectMastercardPage: NextPage<Props> = ({ connectUrl }) => {
     const router = useRouter();
-    const { dwollaCustomerId, finicityCustomerId } = router.query as Query;
+    const { dwollaCustomerId, mastercardCustomerId } = router.query as Query;
     const [showProgress, setShowProgress] = useState<boolean>(false);
 
-    const { launch: launchConnect, ready: isConnectReady } = useFinicityConnect({
+    const { launch: launchConnect, ready: isConnectReady } = useMastercardConnect({
         onCancel(): void {
             alert("User exited Connect. Please reload page to try again.");
         },
@@ -61,7 +61,7 @@ export const ConnectFinicityPage: NextPage<Props> = ({ connectUrl }) => {
      * @returns - An array of connected FI accounts. Only the first is used.
      */
     async function fetchCustomerAccounts(): Promise<CustomerAccount[] | null> {
-        const response = await fetch(`/api/finicity/accounts/${finicityCustomerId}`);
+        const response = await fetch(`/api/mastercard/accounts/${mastercardCustomerId}`);
         if (!response.ok) return null;
         return response.json();
     }
@@ -71,7 +71,7 @@ export const ConnectFinicityPage: NextPage<Props> = ({ connectUrl }) => {
      * @returns - The receipt that is then sent to Dwolla when creating an exchange
      */
     async function fetchPartnerConsent(account: CustomerAccount): Promise<any> {
-        const response = await fetch("/api/finicity/consent", {
+        const response = await fetch("/api/mastercard/consent", {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -79,7 +79,7 @@ export const ConnectFinicityPage: NextPage<Props> = ({ connectUrl }) => {
             },
             body: JSON.stringify({
                 accountId: account.id,
-                customerId: finicityCustomerId
+                customerId: mastercardCustomerId
             } as FetchPartnerConsentOptions)
         });
 
@@ -91,14 +91,14 @@ export const ConnectFinicityPage: NextPage<Props> = ({ connectUrl }) => {
     if (isConnectReady && !showProgress) launchConnect({ url: connectUrl });
 
     return (
-        <MainLayout title="Step 2: Connect Bank with Finicity">
+        <MainLayout title="Step 2: Connect Bank with Mastercard">
             {showProgress && (
                 <Card sx={{ padding: 3 }}>
                     <CardHeader title="Connecting..." />
                     <CardContent>
                         <LinearProgress />
                         <Typography component="p" sx={{ mt: 1 }} variant="body1">
-                            Please wait while we connect to Finicity. This make take a few moments.
+                            Please wait while we connect to Mastercard. This make take a few moments.
                         </Typography>
                     </CardContent>
                 </Card>
@@ -111,8 +111,8 @@ export const ConnectFinicityPage: NextPage<Props> = ({ connectUrl }) => {
  * When the page loads, fetch the Connect URL for the customer and pass it as a prop.
  */
 export const getServerSideProps: GetServerSideProps = async (context): Promise<GetServerSidePropsResult<Props>> => {
-    const { finicityCustomerId } = context.query;
-    const connectUrl = await generateConnectUrl({ customerId: finicityCustomerId } as GenerateConnectUrlOptions);
+    const { mastercardCustomerId: mastercardCustomerId } = context.query;
+    const connectUrl = await generateConnectUrl({ customerId: mastercardCustomerId } as GenerateConnectUrlOptions);
 
     return {
         props: {
@@ -121,4 +121,4 @@ export const getServerSideProps: GetServerSideProps = async (context): Promise<G
     };
 };
 
-export default ConnectFinicityPage;
+export default ConnectMastercardPage;

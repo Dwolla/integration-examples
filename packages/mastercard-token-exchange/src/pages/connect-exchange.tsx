@@ -68,7 +68,7 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangePartnerHref }) =>
             body: JSON.stringify({
                 customerId: dwollaCustomerId,
                 exchangePartnerHref,
-                finicityReceipt: decodedReceipt
+                mastercardReceipt: decodedReceipt
             } as CreateExchangeOptions)
         });
 
@@ -196,7 +196,7 @@ export const ConnectExchangePage: NextPage<Props> = ({ exchangePartnerHref }) =>
 };
 
 /**
- * When the page loads, fetch Finicity's exchange ID from Dwolla and pass it as a prop.
+ * When the page loads, fetch Mastercard's exchange ID from Dwolla and pass it as a prop.
  */
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetServerSidePropsResult<Props>> => {
     const exchangePartnerHref = await getExchangePartnerHref();

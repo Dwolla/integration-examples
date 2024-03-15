@@ -9,7 +9,7 @@ import { assertRequestMethod, assertValidBody, tryWithResponse } from "../../../
 export default async function dwollaExchangesApi(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (!assertRequestMethod("POST", req, res)) return;
     const body = req.body as CreateExchangeOptions;
-    if (!assertValidBody(body, ["customerId", "exchangePartnerHref", "finicityReceipt"], res)) return;
+    if (!assertValidBody(body, ["customerId", "exchangePartnerHref", "mastercardReceipt"], res)) return;
 
     await tryWithResponse(async () => {
         const location = await createExchange({ ...body });
