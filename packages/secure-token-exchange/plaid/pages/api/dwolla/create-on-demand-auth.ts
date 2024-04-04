@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { createOnDemandAuthorization } from "../../../app/dwolla";
 
 export default async function createOnDemandAuthApi(req: NextApiRequest, res: NextApiResponse) {

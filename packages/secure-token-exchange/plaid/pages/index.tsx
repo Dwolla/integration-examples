@@ -1,8 +1,10 @@
-import { NextPage } from "next";
-import { ChangeEventHandler, useCallback, useEffect } from "react";
-import { PlaidLinkOnSuccess, usePlaidLink } from "react-plaid-link";
+import type { NextPage } from "next";
+import type { ChangeEventHandler } from "react";
+import { useCallback, useEffect } from "react";
+import type { PlaidLinkOnSuccess } from "react-plaid-link";
+import { usePlaidLink } from "react-plaid-link";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
-import { CreateFundingSourceOptions } from "../app/dwolla";
+import type { CreateFundingSourceOptions } from "../app/dwolla";
 import useState from "react-usestateref";
 import Head from "next/head";
 

@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { createFundingSource, CreateFundingSourceOptions } from "../../../app/dwolla";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { CreateFundingSourceOptions } from "../../../app/dwolla";
+import { createFundingSource } from "../../../app/dwolla";
 
 export default async function createFundingSourceApi(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "POST") {

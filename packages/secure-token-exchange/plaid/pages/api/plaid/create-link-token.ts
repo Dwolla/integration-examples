@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { createLinkToken } from "../../../app/plaid";
 
 export default async function createLinkTokenApi(req: NextApiRequest, res: NextApiResponse) {

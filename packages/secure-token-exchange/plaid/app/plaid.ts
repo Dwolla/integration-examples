@@ -1,10 +1,9 @@
+import type { LinkTokenCreateRequest, ProcessorTokenCreateRequest } from "plaid";
 import {
     Configuration,
     CountryCode,
-    LinkTokenCreateRequest,
     PlaidApi,
     PlaidEnvironments,
-    ProcessorTokenCreateRequest,
     ProcessorTokenCreateRequestProcessorEnum,
     Products
 } from "plaid";
