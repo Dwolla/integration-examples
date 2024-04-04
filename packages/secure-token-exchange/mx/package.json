@@ -10,8 +10,8 @@
         "clean": "../../node_modules/.bin/rimraf \"{.next,node_modules,tsconfig.tsbuildinfo}\"",
         "dev": "next dev",
         "format": "../../node_modules/.bin/prettier --config ../../.prettierrc.json --write \"src/**/*.+(ts|tsx)\"",
-        "lint": "next lint --config ../../.eslintrc.json",
-        "lint:fix": "next lint --config ../../.eslintrc.json --fix",
+        "lint": "next lint --config ../../../.eslintrc.json",
+        "lint:fix": "next lint --config ../../../.eslintrc.json --fix",
         "prettier:check": "../../node_modules/.bin/prettier --check --config ../../.prettierrc.json \"src/**/*.+(ts|tsx)\"",
         "prettier:write": "../../node_modules/.bin/prettier --config ../../.prettierrc.json \"src/**/*.+(ts|tsx)\" --write",
         "start": "next start"

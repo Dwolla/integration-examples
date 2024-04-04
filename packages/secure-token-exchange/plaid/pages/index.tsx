@@ -195,7 +195,7 @@ const Home: NextPage = () => {
                                 />
                             </Form.Group>
 
-                            <Form.Group as={Row} className="mb-3" controlId="formGroupOnDemandChecked">
+                            <Form.Group as={Row} className="mb-3" controlId="formGroupFundingSourceName">
                                 <Form.Label>Funding Source Name</Form.Label>
                                 <Form.Control
                                     type="text"
@@ -203,7 +203,7 @@ const Home: NextPage = () => {
                                     placeholder="Enter your Dwolla funding source name"
                                 />
                             </Form.Group>
-                            <Form.Group as={Row} className="mb-3" controlId="formGroupFundingSourceName">
+                            <Form.Group as={Row} className="mb-3" controlId="formGroupOnDemandChecked">
                                 <p>{bodyText}</p>
                                 <Form.Check
                                     label={buttonText}
