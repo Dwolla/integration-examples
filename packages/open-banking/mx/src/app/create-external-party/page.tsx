@@ -96,9 +96,23 @@ export default function Page() {
 
         const mxExchangeUrl = exchangeSessionResponse.resourceHref;
 
-        if (mxExchangeUrl) {
-            router.push(mxExchangeUrl);
+        if (!mxExchangeUrl) {
+            return updateNetworkAlert({
+                alert: { severity: "error", message: "No Exchange session URL was returned from getExchangeSession()" },
+                networkState: NetworkState.NOT_LOADING
+            });
         }
+
+        // TODO: Needs documentation
+        const createQueryString = (name: string, value: string) => {
+            const params = new URLSearchParams();
+            params.set(name, value);
+
+            return params.toString();
+        };
+
+        // TODO: Needs documentation
+        await router.push("/connect-mx" + "?" + createQueryString("widgetUrl", mxExchangeUrl));
     };
 
     return (
@@ -115,7 +129,6 @@ export default function Page() {
                         component="form"
                         autoComplete="off"
                         noValidate
-                        // action={onSubmitAction}
                         onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
                             event.preventDefault();
 

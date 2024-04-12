@@ -26,6 +26,9 @@ dependencies:
   '@mui/material-nextjs':
     specifier: ^5.15.11
     version: 5.15.11(@emotion/cache@11.11.0)(@mui/material@5.15.14)(@types/react@18.2.67)(next@14.1.3)(react@18.2.0)
+  '@mxenabled/web-widget-sdk':
+    specifier: ^0.0.13
+    version: 0.0.13
   dwolla-v2:
     specifier: ^3.4.0
     version: 3.4.0
@@ -491,6 +494,16 @@ packages:
       prop-types: 15.8.1
       react: 18.2.0
       react-is: 18.2.0
+    dev: false
+
+  /@mxenabled/web-widget-sdk@0.0.13:
+    resolution: {integrity: sha512-kPH33le0A/yzAC8x+KVN0ys3+vsE7aunnPYHmLUf0WZLc0oxwYZFcR9NJETnf11yGAbB+tpNWwUf2jMnHBu3Gg==}
+    dependencies:
+      '@mxenabled/widget-post-message-definitions': 1.4.0
+    dev: false
+
+  /@mxenabled/widget-post-message-definitions@1.4.0:
+    resolution: {integrity: sha512-rBC+I1gW6hIbmigQ7pqQOf4+d8gENZ3zAAp3L2i6A0L0Oq+U0YlaYNn3f76cTzOPquuKceeFiwyoRTSb4ATwnQ==}
     dev: false
 
   /@next/env@14.1.3:
