@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ConnectWidget } from "@mxenabled/web-widget-sdk";
 import { Box } from "@mui/material";
 import { useWidgetRef } from "../../../../../secure-token-exchange/mx/src/hooks/useWidgetRef";
@@ -27,6 +27,14 @@ export default function Page() {
             });
         }
     }, [widgetElement, widgetUrl]);
+
+    function handleEvent(event) {
+        if (event.data.type === "mx/account/created") {
+            console.log("handleEvent:", event.data.metadata);
+        }
+    }
+
+    window.addEventListener("message", handleEvent);
 
     return (
         <div>
