@@ -152,3 +152,47 @@ export async function getExchangeSession(exchangeSessioId: string): Promise<Next
         };
     }
 }
+
+/**
+ * Creates an exchange for an external party
+ */
+export async function createExchange(
+    externalPartyId: string,
+    memberId: string,
+    accountId: string
+): Promise<NextAPIResponse> {
+    const exchangePartnerHref = await getExchangePartnerHref();
+    const requestBody = {
+        _links: {
+            "exchange-partner": {
+                href: exchangePartnerHref
+            }
+        },
+        mx: {
+            memberId: memberId,
+            accountId: accountId
+        }
+    };
+
+    try {
+        const response = await dwolla.post(`external-parties/${externalPartyId}/exchanges`, requestBody);
+        const location = response.headers.get("location");
+        if (location) {
+            console.log("Exchange created successfully. Location :", location);
+            return {
+                success: true,
+                message: "Exchange  created successfully",
+                resourceHref: location
+            };
+        }
+        return {
+            success: false
+        };
+    } catch (error) {
+        console.error("Error creating Dwolla Exchange:", error);
+        return {
+            success: false,
+            message: "An error occurred while creating the exchange"
+        };
+    }
+}

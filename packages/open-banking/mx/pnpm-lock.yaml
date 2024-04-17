@@ -46,6 +46,9 @@ dependencies:
     version: 9.0.1
 
 devDependencies:
+  '@mxenabled/widget-post-message-definitions':
+    specifier: ^1.4.0
+    version: 1.4.0
   '@types/node':
     specifier: ^20
     version: 20.11.30
@@ -504,7 +507,6 @@ packages:
 
   /@mxenabled/widget-post-message-definitions@1.4.0:
     resolution: {integrity: sha512-rBC+I1gW6hIbmigQ7pqQOf4+d8gENZ3zAAp3L2i6A0L0Oq+U0YlaYNn3f76cTzOPquuKceeFiwyoRTSb4ATwnQ==}
-    dev: false
 
   /@next/env@14.1.3:
     resolution: {integrity: sha512-VhgXTvrgeBRxNPjyfBsDIMvgsKDxjlpw4IAUsHCX8Gjl1vtHUYRT3+xfQ/wwvLPDd/6kqfLqk9Pt4+7gysuCKQ==}

@@ -94,16 +94,16 @@ export default function Page() {
 
         const exchangeSessionResponse = await getExchangeSession(exchangeSessionId);
 
-        const mxExchangeUrl = exchangeSessionResponse.resourceHref;
+        const mxExchangeSessionUrl = exchangeSessionResponse.resourceHref;
 
-        if (!mxExchangeUrl) {
+        if (!mxExchangeSessionUrl) {
             return updateNetworkAlert({
                 alert: { severity: "error", message: "No Exchange session URL was returned from getExchangeSession()" },
                 networkState: NetworkState.NOT_LOADING
             });
         }
 
-        // TODO: Needs documentation
+        // TODO: Needs documentation <- This is reused, consider adding to /utils
         const createQueryString = (name: string, value: string) => {
             const params = new URLSearchParams();
             params.set(name, value);
@@ -112,7 +112,12 @@ export default function Page() {
         };
 
         // TODO: Needs documentation
-        await router.push("/connect-mx" + "?" + createQueryString("widgetUrl", mxExchangeUrl));
+        await router.push(
+            "/connect-mx" +
+                "?" +
+                // createQueryString("externalPartyId", dwollaExternalPartyId) +
+                createQueryString("widgetUrl", mxExchangeSessionUrl)
+        );
     };
 
     return (
