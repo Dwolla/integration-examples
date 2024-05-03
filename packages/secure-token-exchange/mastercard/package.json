@@ -1,0 +1,42 @@
+{
+    "name": "@example/mastercard-token-exchange",
+    "version": "1.0.0",
+    "description": "Dwolla integration example that uses the Secure Token Exchange to verify a customer's bank account using Mastercard",
+    "license": "MIT",
+    "author": "Dwolla, Inc.",
+    "scripts": {
+        "build": "next build",
+        "checks": "../../../node_modules/.bin/tsc --pretty --noEmit && pnpm lint && pnpm prettier:check",
+        "clean": "../../../node_modules/.bin/rimraf \"{.next,node_modules,sdks,tsconfig.tsbuildinfo}\"",
+        "dev": "next dev",
+        "format": "../../../node_modules/.bin/prettier --config ../../../.prettierrc.json --write \"src/**/*.+(ts|tsx)\"",
+        "lint": "next lint --config ../../../.eslintrc.json",
+        "lint:fix": "next lint --config ../../../.eslintrc.json --fix",
+        "prettier:check": "../../../node_modules/.bin/prettier --check --config ../../../.prettierrc.json \"src/**/*.+(ts|tsx)\"",
+        "prettier:write": "../../../node_modules/.bin/prettier --config ../../../.prettierrc.json \"src/**/*.+(ts|tsx)\" --write",
+        "start": "next start"
+    },
+    "devDependencies": {
+        "@types/node": "20.11.26",
+        "@types/react": "18.2.65",
+        "@types/react-dom": "18.2.21"
+    },
+    "dependencies": {
+        "@emotion/cache": "^11.11.0",
+        "@emotion/react": "^11.11.4",
+        "@emotion/server": "^11.11.0",
+        "@emotion/styled": "^11.11.0",
+        "@mastercard/node-sdk": "link:sdks/mastercard",
+        "@mui/icons-material": "^5.15.12",
+        "@mui/lab": "5.0.0-alpha.167",
+        "@mui/material": "^5.15.12",
+        "axios": "^1.6.7",
+        "core-js": "^3.36.0",
+        "dwolla-v2": "4.0.0-ts-alpha.0",
+        "form-data": "^4.0.0",
+        "next": "^12.3.4",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-script-hook": "^1.7.2"
+    }
+}
