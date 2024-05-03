@@ -22,4 +22,4 @@ username: user_good
 password: pass_good
 ```
 
-To simulate different flows, you can use different test credentials that can be found in [Plaid's website](https://plaid.com/docs/sandbox/test-credentials/).
+To simulate different flows, you can use different test credentials that can be found on [Plaid's website](https://plaid.com/docs/sandbox/test-credentials/).
