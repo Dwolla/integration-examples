@@ -96,7 +96,7 @@ const CreateCustomersPage: NextPage = () => {
             )}
 
             <Card sx={{ padding: 3 }}>
-                <CardHeader title="Create Customers" />
+                <CardHeader title="Create Customer" />
                 <CardContent>
                     <Box component="form" autoComplete="off" noValidate onSubmit={handleFormSubmit} sx={{ mt: 1 }}>
                         <Grid container columnSpacing={2}>
