@@ -88,7 +88,7 @@ const CreateCustomersPage: NextPage = () => {
     }
 
     return (
-        <MainLayout title="Step 1: Create Customers">
+        <MainLayout title="Step 1: Create Customer">
             {alert && (
                 <Alert severity={alert.severity} sx={{ mb: 2 }}>
                     {alert.message}
