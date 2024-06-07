@@ -1,4 +1,4 @@
-// TODO: Redirect to /create-external-party
+import { redirect } from "next/navigation";
 export default function Home() {
-    return <div>Dwolla + Visa Open Banking Example</div>;
+    redirect("/create-external-party"); // redirect to /create-external-party
 }

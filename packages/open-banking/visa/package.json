@@ -23,19 +23,20 @@
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@mui/lab": "5.0.0-alpha.170",
     "@mui/material": "^5.15.19",
     "@mui/material-nextjs": "^5.15.11",
     "dwolla-v2": "^3.4.0",
     "next": "14.2.3",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.3",
+    "@types/uuid": "^9.0.8",
     "typescript": "^5"
   }
 }
