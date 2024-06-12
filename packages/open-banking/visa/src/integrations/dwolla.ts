@@ -1,7 +1,7 @@
 "use server";
 import { Client } from "dwolla-v2";
 import { getEnvironmentVariable } from "./index";
-import { equalsIgnoreCase } from "../utils";
+import { equalsIgnoreCase, getBaseUrl } from "../utils";
 
 export interface CreateExchangeOptions {
     externalPartyId: string;
@@ -18,7 +18,7 @@ export interface CreateExchangeSessionOptions {
 
 export interface CreateFundingSourceOptions {
     externalPartyId: string;
-    exchangeUrl: string;
+    exchangeId: string;
     name: string;
     type: "checking" | "savings";
 }
@@ -90,7 +90,7 @@ export async function getExchangePartnerHref(): Promise<NextAPIResponse> {
     try {
         const response = await dwolla.get("/exchange-partners");
         const partnersList = response.body._embedded["exchange-partners"];
-        const mxPartner = partnersList.filter((obj: { name: string }) => equalsIgnoreCase(obj.name, "VISA"))[0];
+        const mxPartner = partnersList.filter((obj: { name: string }) => equalsIgnoreCase(obj.name, "Tink"))[0];
         console.log("MX External party retrieved successfully :", mxPartner._links.self.href);
         return mxPartner._links.self.href;
     } catch (error) {
@@ -142,9 +142,9 @@ export async function createExchangeSession(externalPartyId: string): Promise<Ne
  * Retrieves an exchange session url by id
  */
 
-export async function getExchangeSession(exchangeSessioId: string): Promise<NextAPIResponse> {
+export async function getExchangeSession(exchangeSessionId: string): Promise<NextAPIResponse> {
     try {
-        const response = await dwolla.get(`/exchange-sessions/${exchangeSessioId}`);
+        const response = await dwolla.get(`/exchange-sessions/${exchangeSessionId}`);
         const externalProviderSessionUrl = response.body._links["external-provider-session"].href;
         console.log("Exchange session retrieved successfully :", externalProviderSessionUrl);
         return {
@@ -161,50 +161,42 @@ export async function getExchangeSession(exchangeSessioId: string): Promise<Next
 }
 
 /**
- * Creates an exchange for an external party
- */
-// export async function createExchange(
-//     externalPartyId: string,
-//     memberId: string,
-//     accountId: string
-// ): Promise<NextAPIResponse> {
-//     const exchangePartnerHref = await getExchangePartnerHref();
-//     const requestBody = {
-//         _links: {
-//             "exchange-partner": {
-//                 href: exchangePartnerHref
-//             }
-//         },
-//         mx: {
-//             memberId: memberId,
-//             accountId: accountId
-//         }
-//     };
-//
-//     try {
-//         const response = await dwolla.post(`external-parties/${externalPartyId}/exchanges`, requestBody);
-//         const location = response.headers.get("location");
-//         if (location) {
-//             console.log("Exchange created successfully. Location :", location);
-//             return {
-//                 success: true,
-//                 message: "Exchange  created successfully",
-//                 resourceHref: location
-//             };
-//         }
-//         return {
-//             success: false
-//         };
-//     } catch (error) {
-//         console.error("Error creating Dwolla Exchange:", error);
-//         return {
-//             success: false,
-//             message: "An error occurred while creating the exchange"
-//         };
-//     }
-// }
-
-/**
  * Creates a funding source for an external party
  */
-//TODO: Write function for creating funding source using an exchange
+export async function createFundingSource(options: CreateFundingSourceOptions): Promise<NextAPIResponse> {
+    const { externalPartyId, exchangeId, name, type } = options;
+    const exchangeUrl = `${getBaseUrl()}/exchanges/${exchangeId}`;
+
+    const requestBody = {
+        _links: {
+            exchange: {
+                href: exchangeUrl
+            }
+        },
+        bankAccountType: type,
+        name: name
+    };
+
+    try {
+        const response = await dwolla.post(`external-parties/${externalPartyId}/funding-sources`, requestBody);
+        const location = response.headers.get("location");
+        if (location) {
+            console.log("Funding source created successfully. Location:", location);
+            return {
+                success: true,
+                message: "Funding source created successfully",
+                resourceHref: location
+            };
+        }
+        return {
+            success: false,
+            message: "An error occurred while processing the response"
+        };
+    } catch (error) {
+        console.error("Error creating Dwolla Funding Source:", error);
+        return {
+            success: false,
+            message: "An error occurred while creating the funding source. Please try again later."
+        };
+    }
+}

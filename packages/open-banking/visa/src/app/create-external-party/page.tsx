@@ -51,12 +51,12 @@ export default function Page() {
         return missingKeys.length === 0;
     }
 
-    async function createDwollaExternalParty(formData: FormData): Promise<string | undefined> {
+    async function createExternalPartyHandler(formData: FormData): Promise<string | undefined> {
         const response = await createExternalParty(formData);
         return response.resourceHref ? uuidFromUrl(response.resourceHref) : undefined;
     }
 
-    async function createDwollaExchangeSession(externalPartyId: string): Promise<string | undefined> {
+    async function createExchangeSessionHandler(externalPartyId: string): Promise<string | undefined> {
         const response = await createExchangeSession(externalPartyId);
         return response.resourceHref ? uuidFromUrl(response.resourceHref) : undefined;
     }
@@ -68,7 +68,7 @@ export default function Page() {
         if (!checkFormValidity()) return;
         updateNetworkAlert({ networkState: NetworkState.LOADING });
 
-        const dwollaExternalPartyId = await createDwollaExternalParty(formData);
+        const dwollaExternalPartyId = await createExternalPartyHandler(formData);
 
         if (!dwollaExternalPartyId) {
             return updateNetworkAlert({
@@ -80,7 +80,12 @@ export default function Page() {
             });
         }
 
-        const exchangeSessionId = await createDwollaExchangeSession(dwollaExternalPartyId);
+        /**
+         * Store externalPartyId in session storage for use in /create-funding-source page
+         */
+        sessionStorage.setItem("externalPartyId", dwollaExternalPartyId);
+
+        const exchangeSessionId = await createExchangeSessionHandler(dwollaExternalPartyId);
 
         if (!exchangeSessionId) {
             return updateNetworkAlert({
