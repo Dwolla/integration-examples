@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import type { ChangeEvent } from "react";
 import React, { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
@@ -25,16 +25,35 @@ import { createFundingSource } from "../../integrations/dwolla";
 type FormState = Partial<CreateFundingSourceOptions>;
 
 export default function CreateFundingSourcePage() {
-    // TODO: Documentation
-    const searchParams = useSearchParams();
+    /**
+     * Our current network alert. Used to indicate to the user if we're loading/awaiting a resource.
+     */
     const { alert, networkState, updateNetworkAlert } = useNetworkAlert();
 
+    /**
+     * Current state of our form. In other words, what key(s) are associated with what value(s), if any.
+     */
     const [formData, setFormData] = useState<FormState>({ type: "checking" });
+
+    /**
+     * Array of missing form keys, if the user submits the form. This is used to show an error.
+     */
     const [missingRequiredKeys, setMissingRequiredKeys] = useState<Array<keyof FormState>>();
 
+    /**
+     * Get the exchangeId from the URL query parameters.
+     */
+    const searchParams = useSearchParams();
     const exchangeId = searchParams.get("exchangeId");
+
+    /**
+     * Retrieve the externalPartyId from session storage.
+     */
     const storedExternalPartyId = typeof window !== "undefined" ? sessionStorage.getItem("externalPartyId") : null;
 
+    /**
+     * Effect to check for exchangeId in the URL query parameters.
+     */
     useEffect(() => {
         if (!exchangeId) {
             updateNetworkAlert({
@@ -44,12 +63,19 @@ export default function CreateFundingSourcePage() {
         }
     }, [exchangeId, updateNetworkAlert]);
 
+    /**
+     * Mutates the form state if the input value changes.
+     */
     const handleInputChanged = (
         event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent
     ): void => {
         setFormData({ ...formData, [event.target.name]: event.target.value });
     };
 
+    /**
+     * Checks if the form is valid by ensuring that all required fields have a value present in them.
+     * @returns true if the form is valid (i.e. does not have any missing keys), otherwise false
+     */
     const checkFormValidity = (): boolean => {
         const missingKeys = getMissingKeys(formData, ["name", "type"]);
         setMissingRequiredKeys(missingKeys);

@@ -30,7 +30,7 @@ export default function Page() {
     const [missingRequiredKeys, setMissingRequiredKeys] = useState<Array<keyof FormState>>();
 
     /**
-     * TODO: Need documentation
+     * Status of the form submission. Used to disable the submit button while the form is being processed.
      */
     const { pending } = useFormStatus();
 
@@ -51,18 +51,29 @@ export default function Page() {
         return missingKeys.length === 0;
     }
 
+    /**
+     * Calls the integration to create an External Party in Dwolla.
+     * @param formData The form data containing the external party information.
+     * @returns The created external party's ID if successful, otherwise undefined.
+     */
     async function createExternalPartyHandler(formData: FormData): Promise<string | undefined> {
         const response = await createExternalParty(formData);
         return response.resourceHref ? uuidFromUrl(response.resourceHref) : undefined;
     }
 
+    /**
+     * Calls the integration to create an Exchange Session in Dwolla.
+     * @param externalPartyId The ID of the created external party.
+     * @returns The created exchange session's ID if successful, otherwise undefined.
+     */
     async function createExchangeSessionHandler(externalPartyId: string): Promise<string | undefined> {
         const response = await createExchangeSession(externalPartyId);
         return response.resourceHref ? uuidFromUrl(response.resourceHref) : undefined;
     }
 
     /**
-     * TODO: Need documentation
+     * Handles the form submission to create an external party and initiate an exchange session.
+     * @param formData The form data submitted by the user.
      */
     const onSubmitAction = async (formData: FormData) => {
         if (!checkFormValidity()) return;
@@ -108,7 +119,9 @@ export default function Page() {
             });
         }
 
-        // TODO: Needs documentation
+        /**
+         * Redirects the user to the Visa exchange session URL.
+         */
         router.push(visaExchangeSessionUrl);
     };
 

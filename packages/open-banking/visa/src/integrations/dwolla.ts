@@ -3,19 +3,6 @@ import { Client } from "dwolla-v2";
 import { getEnvironmentVariable } from "./index";
 import { equalsIgnoreCase, getBaseUrl } from "../utils";
 
-export interface CreateExchangeOptions {
-    externalPartyId: string;
-    exchangePartnerHref: string;
-    mx: {
-        memberId: string;
-        accountId: string;
-    };
-}
-
-export interface CreateExchangeSessionOptions {
-    exchangePartnerHref: string;
-}
-
 export interface CreateFundingSourceOptions {
     externalPartyId: string;
     exchangeId: string;
@@ -90,9 +77,9 @@ export async function getExchangePartnerHref(): Promise<NextAPIResponse> {
     try {
         const response = await dwolla.get("/exchange-partners");
         const partnersList = response.body._embedded["exchange-partners"];
-        const mxPartner = partnersList.filter((obj: { name: string }) => equalsIgnoreCase(obj.name, "Tink"))[0];
-        console.log("MX External party retrieved successfully :", mxPartner._links.self.href);
-        return mxPartner._links.self.href;
+        const visaPartner = partnersList.filter((obj: { name: string }) => equalsIgnoreCase(obj.name, "Visa"))[0];
+        console.log("Visa External party retrieved successfully :", visaPartner._links.self.href);
+        return visaPartner._links.self.href;
     } catch (error) {
         console.error("Error retrieving exchange partners", error);
         return {
@@ -104,6 +91,8 @@ export async function getExchangePartnerHref(): Promise<NextAPIResponse> {
 
 /**
  * Creates an exchange session for an external party
+ * @param externalPartyId - The ID of the external party to create the exchange session for.
+ * @returns NextAPIResponse containing success status, optional message, and resourceHref if successful.
  */
 export async function createExchangeSession(externalPartyId: string): Promise<NextAPIResponse> {
     const exchangePartnerHref = await getExchangePartnerHref();
@@ -140,8 +129,9 @@ export async function createExchangeSession(externalPartyId: string): Promise<Ne
 
 /**
  * Retrieves an exchange session url by id
+ * @param exchangeSessionId - The ID of the exchange session to retrieve.
+ * @returns NextAPIResponse containing success status, optional message, and resourceHref if successful.
  */
-
 export async function getExchangeSession(exchangeSessionId: string): Promise<NextAPIResponse> {
     try {
         const response = await dwolla.get(`/exchange-sessions/${exchangeSessionId}`);
@@ -162,6 +152,8 @@ export async function getExchangeSession(exchangeSessionId: string): Promise<Nex
 
 /**
  * Creates a funding source for an external party
+ * @param options - The options of type CreateFundingSourceOptions for creating the funding source.
+ * @returns NextAPIResponse containing success status, optional message, and resourceHref if successful.
  */
 export async function createFundingSource(options: CreateFundingSourceOptions): Promise<NextAPIResponse> {
     const { externalPartyId, exchangeId, name, type } = options;
