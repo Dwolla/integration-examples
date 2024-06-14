@@ -11,11 +11,22 @@ This example project, built using [Next.js](https://nextjs.org), demonstrates op
 3. Run `pnpm install` to download all necessary dependencies.
 [//]: # (TODO: Update information regarding setting up a redirect URL)
 4. Set up redirect URL for Visa flow.
-5. Run `pnpm dev` to start the Next.js application! (Before connecting a bank account, please see _[Using Visa Demo Bank](#using-visa-demo-bank)_.)
+5. Run `pnpm dev` to start the Next.js application! (Before connecting a bank account, please see _[Using Visa Test Credentials](#using-visa-test-credentials)_.)
 
-## Using Visa Demo Bank
 
-[//]: # (TODO: Add information regarding Visa Demo bank credentials)
+## Using Visa Test Credentials
+
+When using Visa in the Sandbox environment, you can use the following test credentials to simulate different scenarios. These credentials are provided by Visa for sandbox testing purposes.
+
+| User        | Username  | Password | Description                                                                   | Result             |
+| ----------- | --------- | -------- |-------------------------------------------------------------------------------| ------------------ |
+| **User 1**  | u51613239 | cty440   | User has successfully authenticated but no account information could be found | Successful         |
+| **User 2**  | u30915384 | bsw325   | Report with full information                                                  | Successful         |
+| **User 3**  | u92721594 | nbs589   | User failed to authenticate themselves at the financial institution           | Authentication error |
+| **User 4**  | u91902655 | jtx720   | Temporary error with a Visa service                                           | Temporary error    |
+
+These credentials allow you to test different authentication and connection scenarios with Visa in the sandbox environment.
+
 
 
 
