@@ -7,7 +7,7 @@ This example project, built using [Next.js](https://nextjs.org), demonstrates op
 ## Prerequisites
 
 1. Create a [Dwolla Sandbox Account](https://accounts-sandbox.dwolla.com/sign-up) and obtain the necessary API keys.
-2. Contact Dwolla support to set up the redirect URL for the Visa flow. The URL should be set to `http://localhost:3000/create-funding-source` for this project. Ensure you also have the proper resource permissions granted for your API keys. Reach out to Dwolla support at [developers@dwolla.com](mailto:developers@dwolla.com) with the following details:
+2. Contact Dwolla to set up the redirect URL for the Visa flow. The redirect URL for this project should be set to `http://localhost:3000/create-funding-source`. Ensure you also have the proper resource permissions granted for your API keys. [Contact Dwolla](mailto:sales@dwolla.com) with the following details:
     - Your Dwolla Sandbox Account information
     - The redirect URL: `http://localhost:3000/create-funding-source`
     - A request for the specific resource permissions needed for the Open Banking integration
