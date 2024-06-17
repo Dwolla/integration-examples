@@ -44,12 +44,12 @@ export default function CreateFundingSourcePage() {
      * Get the exchangeId from the URL query parameters.
      */
     const searchParams = useSearchParams();
-    const exchangeId = searchParams.get("exchangeId");
+    const exchangeId = searchParams.get("exchange");
 
     /**
-     * Retrieve the externalPartyId from session storage.
+     * Retrieve the customerId from session storage.
      */
-    const storedExternalPartyId = typeof window !== "undefined" ? sessionStorage.getItem("externalPartyId") : null;
+    const storedCustomerId = typeof window !== "undefined" ? sessionStorage.getItem("customerId") : null;
 
     /**
      * Effect to check for exchangeId in the URL query parameters.
@@ -85,18 +85,18 @@ export default function CreateFundingSourcePage() {
     /**
      * Handles the creation of the funding source by making an API call.
      * @param formData - The data to be sent to the API.
-     * @param storedExternalPartyId - The ID of the external party.
+     * @param storedCustomerId - The ID of the Customer.
      * @param exchangeId - The ID of the exchange session.
      * @returns The URL of the created funding source, if successful.
      */
     const createFundingSourceHandler = async (
         formData: FormState,
-        storedExternalPartyId: string,
+        storedCustomerId: string,
         exchangeId: string
     ): Promise<string | undefined> => {
         const options: CreateFundingSourceOptions = {
             ...formData,
-            externalPartyId: storedExternalPartyId,
+            customerId: storedCustomerId,
             exchangeId: exchangeId
         } as CreateFundingSourceOptions;
 
@@ -114,14 +114,14 @@ export default function CreateFundingSourcePage() {
         if (!checkFormValidity()) return;
         updateNetworkAlert({ networkState: NetworkState.LOADING });
 
-        if (!exchangeId || !storedExternalPartyId) {
+        if (!exchangeId || !storedCustomerId) {
             return updateNetworkAlert({
-                alert: { severity: "error", message: "Missing required exchangeId or externalPartyId" },
+                alert: { severity: "error", message: "Missing required exchangeId or customerId" },
                 networkState: NetworkState.NOT_LOADING
             });
         }
 
-        const fundingSourceUrl = await createFundingSourceHandler(formData, storedExternalPartyId, exchangeId);
+        const fundingSourceUrl = await createFundingSourceHandler(formData, storedCustomerId, exchangeId);
 
         if (!fundingSourceUrl) {
             return updateNetworkAlert({

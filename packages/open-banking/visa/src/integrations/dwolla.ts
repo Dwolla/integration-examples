@@ -4,12 +4,12 @@ import { getEnvironmentVariable } from "./index";
 import { equalsIgnoreCase, getBaseUrl } from "../utils";
 
 export interface CreateFundingSourceOptions {
-    externalPartyId: string;
+    customerId: string;
     exchangeId: string;
     name: string;
     type: "checking" | "savings";
 }
-export interface CreateExternalPartyOptions {
+export interface CreateCustomerOptions {
     firstName: string;
     lastName: string;
     email: string;
@@ -21,39 +21,32 @@ export interface NextAPIResponse {
     resourceHref?: string;
 }
 
-// const dwolla = new Client({
-//     environment: getEnvironmentVariable("DWOLLA_ENV").toLowerCase() as "production" | "sandbox",
-//     key: getEnvironmentVariable("DWOLLA_KEY"),
-//     secret: getEnvironmentVariable("DWOLLA_SECRET")
-// });
-
-// TODO: Remove devint from final draft and replace with the above
 const dwolla = new Client({
+    environment: getEnvironmentVariable("DWOLLA_ENV").toLowerCase() as "production" | "sandbox",
     key: getEnvironmentVariable("DWOLLA_KEY"),
-    secret: getEnvironmentVariable("DWOLLA_SECRET"),
-    environment: "devint"
+    secret: getEnvironmentVariable("DWOLLA_SECRET")
 });
 
 /**
- * Creates an external party resource.
+ * Creates a Customer resource.
  * @param formData - FormData containing firstName, lastName, and email fields.
  * @returns NextAPIResponse containing success status, optional message, and resourceHref if successful.
  */
-export async function createExternalParty(formData: FormData): Promise<NextAPIResponse> {
-    const requestBody: CreateExternalPartyOptions = {
+export async function createCustomer(formData: FormData): Promise<NextAPIResponse> {
+    const requestBody: CreateCustomerOptions = {
         firstName: formData.get("firstName") as string,
         lastName: formData.get("lastName") as string,
         email: formData.get("email") as string
     };
 
     try {
-        const response = await dwolla.post("external-parties", { ...requestBody });
+        const response = await dwolla.post("customers", { ...requestBody });
         const location = response.headers.get("location");
         if (location) {
-            console.log("External party created successfully. Location:", location);
+            console.log("Customer created successfully. Location:", location);
             return {
                 success: true,
-                message: "External party created successfully",
+                message: "Customer created successfully",
                 resourceHref: location
             };
         }
@@ -62,10 +55,10 @@ export async function createExternalParty(formData: FormData): Promise<NextAPIRe
             message: "An error occurred while processing the response"
         };
     } catch (error) {
-        console.error("Error creating Dwolla External Party:", error);
+        console.error("Error creating Dwolla Customer:", error);
         return {
             success: false,
-            message: "An error occurred while creating the external party. Please try again later."
+            message: "An error occurred while creating the customer. Please try again later."
         };
     }
 }
@@ -78,7 +71,7 @@ export async function getExchangePartnerHref(): Promise<NextAPIResponse> {
         const response = await dwolla.get("/exchange-partners");
         const partnersList = response.body._embedded["exchange-partners"];
         const visaPartner = partnersList.filter((obj: { name: string }) => equalsIgnoreCase(obj.name, "Visa"))[0];
-        console.log("Visa External party retrieved successfully :", visaPartner._links.self.href);
+        console.log("Visa Exchange Partner retrieved successfully :", visaPartner._links.self.href);
         return visaPartner._links.self.href;
     } catch (error) {
         console.error("Error retrieving exchange partners", error);
@@ -90,11 +83,11 @@ export async function getExchangePartnerHref(): Promise<NextAPIResponse> {
 }
 
 /**
- * Creates an exchange session for an external party
- * @param externalPartyId - The ID of the external party to create the exchange session for.
+ * Creates an exchange session for a customer
+ * @param customerId - The ID of the customer to create the exchange session for.
  * @returns NextAPIResponse containing success status, optional message, and resourceHref if successful.
  */
-export async function createExchangeSession(externalPartyId: string): Promise<NextAPIResponse> {
+export async function createExchangeSession(customerId: string): Promise<NextAPIResponse> {
     const exchangePartnerHref = await getExchangePartnerHref();
     const requestBody = {
         _links: {
@@ -105,7 +98,7 @@ export async function createExchangeSession(externalPartyId: string): Promise<Ne
     };
 
     try {
-        const response = await dwolla.post(`external-parties/${externalPartyId}/exchange-sessions`, requestBody);
+        const response = await dwolla.post(`customers/${customerId}/exchange-sessions`, requestBody);
         const location = response.headers.get("location");
         if (location) {
             console.log("Exchange session created successfully. Location :", location);
@@ -151,12 +144,12 @@ export async function getExchangeSession(exchangeSessionId: string): Promise<Nex
 }
 
 /**
- * Creates a funding source for an external party
+ * Creates a funding source for a Customer
  * @param options - The options of type CreateFundingSourceOptions for creating the funding source.
  * @returns NextAPIResponse containing success status, optional message, and resourceHref if successful.
  */
 export async function createFundingSource(options: CreateFundingSourceOptions): Promise<NextAPIResponse> {
-    const { externalPartyId, exchangeId, name, type } = options;
+    const { customerId, exchangeId, name, type } = options;
     const exchangeUrl = `${getBaseUrl()}/exchanges/${exchangeId}`;
 
     const requestBody = {
@@ -170,7 +163,7 @@ export async function createFundingSource(options: CreateFundingSourceOptions): 
     };
 
     try {
-        const response = await dwolla.post(`external-parties/${externalPartyId}/funding-sources`, requestBody);
+        const response = await dwolla.post(`customers/${customerId}/funding-sources`, requestBody);
         const location = response.headers.get("location");
         if (location) {
             console.log("Funding source created successfully. Location:", location);

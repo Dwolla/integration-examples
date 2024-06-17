@@ -7,10 +7,10 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Box, Card, CardContent, CardHeader, Grid, TextField } from "@mui/material";
 import { NetworkState, useNetworkAlert } from "../../hooks/useNetworkAlert";
 import { getMissingKeys, uuidFromUrl } from "../../utils";
-import type { CreateExternalPartyOptions } from "../../integrations/dwolla";
-import { createExternalParty, createExchangeSession, getExchangeSession } from "../../integrations/dwolla";
+import type { CreateCustomerOptions } from "../../integrations/dwolla";
+import { createCustomer, createExchangeSession, getExchangeSession } from "../../integrations/dwolla";
 
-type FormState = Partial<CreateExternalPartyOptions>;
+type FormState = Partial<CreateCustomerOptions>;
 
 export default function Page() {
     const router = useRouter();
@@ -52,57 +52,57 @@ export default function Page() {
     }
 
     /**
-     * Calls the integration to create an External Party in Dwolla.
-     * @param formData The form data containing the external party information.
-     * @returns The created external party's ID if successful, otherwise undefined.
+     * Calls the integration to create a Customer in Dwolla.
+     * @param formData The form data containing the customer information.
+     * @returns The created customer's ID if successful, otherwise undefined.
      */
-    async function createExternalPartyHandler(formData: FormData): Promise<string | undefined> {
-        const response = await createExternalParty(formData);
+    async function createCustomerHandler(formData: FormData): Promise<string | undefined> {
+        const response = await createCustomer(formData);
         return response.resourceHref ? uuidFromUrl(response.resourceHref) : undefined;
     }
 
     /**
      * Calls the integration to create an Exchange Session in Dwolla.
-     * @param externalPartyId The ID of the created external party.
+     * @param customerId The ID of the created customer.
      * @returns The created exchange session's ID if successful, otherwise undefined.
      */
-    async function createExchangeSessionHandler(externalPartyId: string): Promise<string | undefined> {
-        const response = await createExchangeSession(externalPartyId);
+    async function createExchangeSessionHandler(customerId: string): Promise<string | undefined> {
+        const response = await createExchangeSession(customerId);
         return response.resourceHref ? uuidFromUrl(response.resourceHref) : undefined;
     }
 
     /**
-     * Handles the form submission to create an external party and initiate an exchange session.
+     * Handles the form submission to create a customer and initiate an exchange session.
      * @param formData The form data submitted by the user.
      */
     const onSubmitAction = async (formData: FormData) => {
         if (!checkFormValidity()) return;
         updateNetworkAlert({ networkState: NetworkState.LOADING });
 
-        const dwollaExternalPartyId = await createExternalPartyHandler(formData);
+        const dwollaCustomerId = await createCustomerHandler(formData);
 
-        if (!dwollaExternalPartyId) {
+        if (!dwollaCustomerId) {
             return updateNetworkAlert({
                 alert: {
                     severity: "error",
-                    message: "No External Party ID was returned from createDwollaExternalParty()"
+                    message: "No Customer ID was returned from createCustomerHandler()"
                 },
                 networkState: NetworkState.NOT_LOADING
             });
         }
 
         /**
-         * Store externalPartyId in session storage for use in /create-funding-source page
+         * Store customerId in session storage for use in /create-funding-source page
          */
-        sessionStorage.setItem("externalPartyId", dwollaExternalPartyId);
+        sessionStorage.setItem("customerId", dwollaCustomerId);
 
-        const exchangeSessionId = await createExchangeSessionHandler(dwollaExternalPartyId);
+        const exchangeSessionId = await createExchangeSessionHandler(dwollaCustomerId);
 
         if (!exchangeSessionId) {
             return updateNetworkAlert({
                 alert: {
                     severity: "error",
-                    message: "No Exchange Session ID was returned from createDwollaExchangeSession()"
+                    message: "No Exchange Session ID was returned from createExchangeSessionHandler()"
                 },
                 networkState: NetworkState.NOT_LOADING
             });
@@ -133,7 +133,7 @@ export default function Page() {
                 </Alert>
             )}
             <Card sx={{ padding: 3 }}>
-                <CardHeader title="Create External Party" />
+                <CardHeader title="Create Customer" />
                 <CardContent>
                     <Box
                         component="form"
