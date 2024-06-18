@@ -1,0 +1,40 @@
+{
+  "name": "@open-banking-example/visa",
+  "version": "1.0.0",
+  "description": "Dwolla integration example that uses open banking with Visa to verify a customer's bank account.",
+  "license": "MIT",
+  "author": "Dwolla, Inc.",
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "scripts": {
+    "build": "next build",
+    "checks": "../../../node_modules/.bin/tsc --pretty --noEmit && pnpm lint && pnpm prettier:check",
+    "clean": "../../../node_modules/.bin/rimraf \"{.next,node_modules,tsconfig.tsbuildinfo}\"",
+    "dev": "next dev",
+    "format": "../../../node_modules/.bin/prettier --config ../../../.prettierrc.json --write \"src/**/*.+(ts|tsx)\"",
+    "lint": "next lint --config ../../../.eslintrc.json",
+    "lint:fix": "next lint --config ../../../.eslintrc.json --fix",
+    "prettier:check": "../../../node_modules/.bin/prettier --check --config ../../../.prettierrc.json \"src/**/*.+(ts|tsx)\"",
+    "prettier:write": "../../../node_modules/.bin/prettier --config ../../../.prettierrc.json \"src/**/*.+(ts|tsx)\" --write",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@emotion/cache": "^11.11.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/lab": "5.0.0-alpha.170",
+    "@mui/material": "^5.15.19",
+    "@mui/material-nextjs": "^5.15.11",
+    "dwolla-v2": "^3.4.0",
+    "next": "14.2.4",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5"
+  }
+}
