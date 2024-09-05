@@ -27,7 +27,7 @@ When using Visa in the Sandbox environment, you can use the following test crede
 | User        | Username  | Password | Description                                                                   | Result                 |
 | ----------- | --------- | -------- |-------------------------------------------------------------------------------|------------------------|
 | **User 1**  | u51613239 | cty440   | User has successfully authenticated but no account information could be found | ✅ Successful           |
-| **User 2**  | u30915384 | bsw325   | Report with full information                                                  | ✅ Successful           |
+| **User 2**  | u35490150 | ckr403   | Report with full information                                                  | ✅ Successful           |
 | **User 3**  | u92721594 | nbs589   | User failed to authenticate themselves at the financial institution           | ❌ Authentication error |
 | **User 4**  | u91902655 | jtx720   | Temporary error with a Visa service                                           | ❌ Temporary error      |
 
