@@ -93,6 +93,9 @@ export async function createExchangeSession(customerId: string): Promise<NextAPI
         _links: {
             "exchange-partner": {
                 href: exchangePartnerHref
+            },
+            "redirect-url": {
+                href: getEnvironmentVariable("REDIRECT_URL")
             }
         }
     };
