@@ -5,8 +5,7 @@ import { getEnvironmentVariable } from "./";
 export interface CreateExchangeOptions {
     customerId: string;
     exchangePartnerHref: string;
-    authSecret: string;
-    accessToken: string;
+    token: string;
 }
 
 export interface CreateFundingSourceOptions {
@@ -29,13 +28,12 @@ const client = new Client({
 });
 
 /**
- * Creates a customer exchange resource using the token that was retrieved from Flinks.
+ * Creates a customer exchange resource using the token that was retrieved from Plaid.
  */
 export async function createExchange({
     customerId,
     exchangePartnerHref,
-    authSecret,
-    accessToken
+    token
 }: CreateExchangeOptions): Promise<string> {
     const response = await client.post(`/customers/${customerId}/exchanges`, {
         _links: {
@@ -43,7 +41,7 @@ export async function createExchange({
                 href: exchangePartnerHref
             }
         },
-        token: tokenifyFlinksAuth(authSecret, accessToken)
+        token
     });
     return response.headers.get("Location");
 }
@@ -78,20 +76,11 @@ export async function createUnverifiedCustomer(options: CreateUnverifiedCustomer
 }
 
 /**
- * Gets Flinks' exchange partner href (link) within Dwolla's systems.
+ * Gets Plaid's exchange partner href (link) within Dwolla's systems.
  */
-export async function getExchangePartnerHref(): Promise<string> {
+export async function getExchangeHref(): Promise<string> {
     const response = await client.get("/exchange-partners");
     const partnersList = response.body._embedded["exchange-partners"];
-    const flinksPartner = partnersList.filter((obj: { name: string }) => equalsIgnoreCase(obj.name, "Flinks"))[0];
-    return flinksPartner._links.self.href;
-}
-
-/**
- * Combine Flinks AuthSecret and AccessToken in Basic Auth format and then Base64 encode.
- *
- * This token is used to create a Dwolla exchange.
- */
-function tokenifyFlinksAuth(authSecret: string, accessToken: string): string {
-    return Buffer.from(`${authSecret}:${accessToken}`, "utf-8").toString("base64");
+    const plaidPartner = partnersList.filter((obj: { name: string }) => equalsIgnoreCase(obj.name, "PLAID"))[0];
+    return plaidPartner._links.self.href;
 }

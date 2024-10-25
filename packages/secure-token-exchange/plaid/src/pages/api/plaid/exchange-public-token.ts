@@ -1,5 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+<<<<<<<< HEAD:packages/secure-token-exchange/plaid/pages/api/plaid/exchange-public-token.ts
 import { exchangePublicToken } from "../../../app/plaid";
+========
+import { exchangePublicToken } from "../../../integrations/plaid";
+>>>>>>>> 3519ac51a280200c1c39edbb57f29ba438092074:packages/secure-token-exchange/plaid/src/pages/api/plaid/exchange-public-token.ts
 
 interface RequestBody {
     accountId?: string;

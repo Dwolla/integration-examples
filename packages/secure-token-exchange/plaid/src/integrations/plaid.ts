@@ -8,14 +8,15 @@ import {
     Products
 } from "plaid";
 import { v4 as uuidv4 } from "uuid";
+import { getEnvironmentVariable } from "./index";
 
 const plaidClient = new PlaidApi(
     new Configuration({
-        basePath: PlaidEnvironments[process.env.PLAID_ENV as string],
+        basePath: PlaidEnvironments[getEnvironmentVariable("PLAID_ENV")],
         baseOptions: {
             headers: {
-                "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID as string,
-                "PLAID-SECRET": process.env.PLAID_SECRET as string,
+                "PLAID-CLIENT-ID": getEnvironmentVariable("PLAID_CLIENT_ID"),
+                "PLAID-SECRET": getEnvironmentVariable("PLAID_SECRET"),
                 "Plaid-Version": "2020-09-14"
             }
         }

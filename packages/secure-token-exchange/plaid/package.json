@@ -6,12 +6,13 @@
     "author": "Dwolla, Inc.",
     "scripts": {
         "build": "next build",
-        "checks": "../../node_modules/.bin/tsc --pretty --noEmit && pnpm lint && pnpm prettier:check",
-        "clean": "../../node_modules/.bin/rimraf \"{.next,node_modules,tsconfig.tsbuildinfo}\"",
+        "checks": "../../../node_modules/.bin/tsc --pretty --noEmit && pnpm lint && pnpm prettier:check",
+        "clean": "../../../node_modules/.bin/rimraf \"{.next,node_modules,tsconfig.tsbuildinfo}\"",
         "dev": "next dev",
-        "format": "../../node_modules/.bin/prettier --config ../../.prettierrc.json --write \"{app,pages}/**/*.+(ts|tsx)\"",
-        "lint": "next lint --config ../../.eslintrc.json",
-        "prettier:check": "../../node_modules/.bin/prettier --check --config ../../.prettierrc.json \"{app,pages}/**/*.+(ts|tsx)\"",
+        "lint": "next lint --config ../../../.eslintrc.json",
+        "lint:fix": "next lint --config ../../../.eslintrc.json --fix",
+        "prettier:check": "../../../node_modules/.bin/prettier --check --config ../../../.prettierrc.json \"src/**/*.+(ts|tsx)\"",
+        "prettier:write": "../../../node_modules/.bin/prettier --config ../../../.prettierrc.json \"src/**/*.+(ts|tsx)\" --write",
         "start": "next start"
     },
     "devDependencies": {
@@ -21,6 +22,13 @@
         "@types/uuid": "^8.3.4"
     },
     "dependencies": {
+        "@emotion/cache": "^11.11.0",
+        "@emotion/react": "^11.11.4",
+        "@emotion/server": "^11.11.0",
+        "@emotion/styled": "^11.11.5",
+        "@mui/icons-material": "^5.15.15",
+        "@mui/lab": "5.0.0-alpha.170",
+        "@mui/material": "^5.15.15",
         "@popperjs/core": "^2.11.5",
         "bootstrap": "^5.2.0",
         "dwolla-v2": "4.0.0-ts-alpha.0",
