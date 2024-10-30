@@ -1,9 +1,10 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+
+import { useSearchParams } from "next/navigation";
 import type { ChangeEvent } from "react";
-import React, { useState } from "react";
-import { useFormStatus } from "react-dom";
+import React, { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
+import type { SelectChangeEvent } from "@mui/material";
 import {
     Alert,
     Box,
@@ -16,20 +17,14 @@ import {
     Select,
     TextField
 } from "@mui/material";
-import type { SelectChangeEvent } from "@mui/material";
 import { NetworkState, useNetworkAlert } from "../../hooks/useNetworkAlert";
 import { getMissingKeys, uuidFromUrl } from "../../utils";
 import type { CreateFundingSourceOptions } from "../integrations/dwolla";
-import { createExchange } from "../integrations/dwolla";
+import { createFundingSource } from "../integrations/dwolla";
 
 type FormState = Partial<CreateFundingSourceOptions>;
 
-export default function Page() {
-    const searchParams = useSearchParams();
-    const dwollaExternalPartyId = searchParams.get("dwollaExternalPartyId");
-    const mxMemberId = searchParams.get("mxMemberId");
-    const mxAccountId = searchParams.get("mxAccountId");
-
+export default function CreateFundingSourcePage() {
     /**
      * Our current network alert. Used to indicate to the user if we're loading/awaiting a resource.
      */
@@ -38,7 +33,7 @@ export default function Page() {
     /**
      * Current state of our form. In other words, what key(s) are associated with what value(s), if any.
      */
-    const [formData, setFormData] = useState<FormState>({});
+    const [formData, setFormData] = useState<FormState>({ type: "checking" });
 
     /**
      * Array of missing form keys, if the user submits the form. This is used to show an error.
@@ -46,80 +41,96 @@ export default function Page() {
     const [missingRequiredKeys, setMissingRequiredKeys] = useState<Array<keyof FormState>>();
 
     /**
-     * TODO: Need documentation
+     * Get the exchangeId from the URL query parameters.
      */
-    const { pending } = useFormStatus();
+    const searchParams = useSearchParams();
+    const exchangeId = searchParams.get("exchange");
+
+    /**
+     * Retrieve the customerId from session storage.
+     */
+    const storedCustomerId = typeof window !== "undefined" ? sessionStorage.getItem("customerId") : null;
+
+    /**
+     * Effect to check for exchangeId in the URL query parameters.
+     */
+    useEffect(() => {
+        if (!exchangeId) {
+            updateNetworkAlert({
+                alert: { severity: "error", message: "Missing exchangeId in the URL query parameters" },
+                networkState: NetworkState.NOT_LOADING
+            });
+        }
+    }, [exchangeId, updateNetworkAlert]);
 
     /**
      * Mutates the form state if the input value changes.
      */
-    function handleInputChanged({
-        target
-    }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent): void {
-        setFormData({ ...formData, [target.name]: target.value });
-    }
+    const handleInputChanged = (
+        event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent
+    ): void => {
+        setFormData({ ...formData, [event.target.name]: event.target.value });
+    };
 
     /**
      * Checks if the form is valid by ensuring that all required fields have a value present in them.
      * @returns true if the form is valid (i.e. does not have any missing keys), otherwise false
      */
-    function checkFormValidity() {
+    const checkFormValidity = (): boolean => {
         const missingKeys = getMissingKeys(formData, ["name", "type"]);
         setMissingRequiredKeys(missingKeys);
         return missingKeys.length === 0;
-    }
+    };
 
-    async function createDwollaExchange(): Promise<string | undefined> {
-        if (!dwollaExternalPartyId || !mxMemberId || !mxAccountId) return undefined;
-        const response = await createExchange(dwollaExternalPartyId, mxMemberId, mxAccountId);
+    /**
+     * Handles the creation of the funding source by making an API call.
+     * @param formData - The data to be sent to the API.
+     * @param storedCustomerId - The ID of the Customer.
+     * @param exchangeId - The ID of the exchange session.
+     * @returns The URL of the created funding source, if successful.
+     */
+    const createFundingSourceHandler = async (
+        formData: FormState,
+        storedCustomerId: string,
+        exchangeId: string
+    ): Promise<string | undefined> => {
+        const options: CreateFundingSourceOptions = {
+            ...formData,
+            customerId: storedCustomerId,
+            exchangeId: exchangeId
+        } as CreateFundingSourceOptions;
+
+        const response = await createFundingSource(options);
         return response.resourceHref ? uuidFromUrl(response.resourceHref) : undefined;
-    }
+    };
 
     /**
-     * Calls our API to create a Funding Source using an Exchange URL
-     * @returns - The resource location of the new Funding Source
+     * Handles the form submission, validates the form, sets the network state,
+     * and calls the API to create the funding source.
+     * @param event - The form submission event.
      */
-    async function createDwollaFundingSource(exchangeUrl: string): Promise<string | undefined> {
-        console.log("entered FS creation function");
-        return "url-of-newly-create-funding-source";
-    }
-
-    /**
-     * TODO: Need documentation
-     */
-    const onSubmitAction = async (formData: FormData) => {
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+        event.preventDefault();
         if (!checkFormValidity()) return;
         updateNetworkAlert({ networkState: NetworkState.LOADING });
 
-        // TODO: 1. Call Server Action to create Exchange
-
-        const exchangeUrl = await createDwollaExchange();
-
-        if (!exchangeUrl) {
+        if (!exchangeId || !storedCustomerId) {
             return updateNetworkAlert({
-                alert: {
-                    severity: "error",
-                    message: "No Exchange ID was returned from createDwollaExchange()"
-                },
+                alert: { severity: "error", message: "Missing required exchangeId or customerId" },
                 networkState: NetworkState.NOT_LOADING
             });
         }
 
-        // TODO: 2. Call Server Action to create Funding Source
-
-        const fundingSourceUrl = await createDwollaFundingSource(exchangeUrl);
+        const fundingSourceUrl = await createFundingSourceHandler(formData, storedCustomerId, exchangeId);
 
         if (!fundingSourceUrl) {
             return updateNetworkAlert({
-                alert: {
-                    severity: "error",
-                    message: "No Funding Source ID was returned from createDwollaFundingSource()"
-                },
+                alert: { severity: "error", message: "No Funding Source URL returned from createFundingSource()." },
                 networkState: NetworkState.NOT_LOADING
             });
         }
 
-        return updateNetworkAlert({
+        updateNetworkAlert({
             alert: { severity: "success", message: `Funding Source Location: ${fundingSourceUrl}.` },
             networkState: NetworkState.NOT_LOADING
         });
@@ -133,20 +144,9 @@ export default function Page() {
                 </Alert>
             )}
             <Card sx={{ padding: 3 }}>
-                <CardHeader title="Create an Exchange and Funding Source" />
+                <CardHeader title="Create Funding Source" />
                 <CardContent>
-                    <Box
-                        component="form"
-                        autoComplete="off"
-                        noValidate
-                        onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
-                            event.preventDefault();
-
-                            const formData = new FormData(event.currentTarget);
-                            onSubmitAction(formData);
-                        }}
-                        sx={{ mt: 1 }}
-                    >
+                    <Box component="form" autoComplete="off" noValidate onSubmit={handleFormSubmit} sx={{ mt: 1 }}>
                         <TextField
                             type="text"
                             error={missingRequiredKeys?.includes("name")}
@@ -181,7 +181,6 @@ export default function Page() {
                             size="large"
                             sx={{ mt: 2 }}
                             variant="contained"
-                            disabled={pending}
                         >
                             Submit
                         </LoadingButton>
