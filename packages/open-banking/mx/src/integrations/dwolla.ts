@@ -1,7 +1,7 @@
 "use server";
 import { Client } from "dwolla-v2";
 import { getEnvironmentVariable } from "./index";
-import { equalsIgnoreCase, getBaseUrl } from "../../utils";
+import { equalsIgnoreCase, getBaseUrl } from "../utils";
 
 export interface CreateCustomerOptions {
     firstName: string;

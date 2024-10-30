@@ -19,8 +19,8 @@ import {
 } from "@mui/material";
 import { NetworkState, useNetworkAlert } from "../../hooks/useNetworkAlert";
 import { getMissingKeys, uuidFromUrl } from "../../utils";
-import type { CreateFundingSourceOptions } from "../integrations/dwolla";
-import { createFundingSource } from "../integrations/dwolla";
+import type { CreateFundingSourceOptions } from "../../integrations/dwolla";
+import { createFundingSource } from "../../integrations/dwolla";
 
 type FormState = Partial<CreateFundingSourceOptions>;
 

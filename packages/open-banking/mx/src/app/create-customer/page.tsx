@@ -7,8 +7,8 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Box, Card, CardContent, CardHeader, Grid, TextField } from "@mui/material";
 import { NetworkState, useNetworkAlert } from "../../hooks/useNetworkAlert";
 import { getMissingKeys, uuidFromUrl } from "../../utils";
-import type { CreateCustomerOptions } from "../integrations/dwolla";
-import { createCustomer, createExchangeSession, getExchangeSession } from "../integrations/dwolla";
+import type { CreateCustomerOptions } from "../../integrations/dwolla";
+import { createCustomer, createExchangeSession, getExchangeSession } from "../../integrations/dwolla";
 
 type FormState = Partial<CreateCustomerOptions>;
 

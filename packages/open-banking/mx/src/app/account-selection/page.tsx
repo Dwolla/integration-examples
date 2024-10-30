@@ -5,8 +5,8 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Box, Card, CardContent, CardHeader, FormControlLabel, Grid, Radio, RadioGroup } from "@mui/material";
 import { NetworkState, useNetworkAlert } from "../../hooks/useNetworkAlert";
 import { uuidFromUrl } from "../../utils";
-import { createExchange, getAvailableExchangeConnections } from "../integrations/dwolla";
-import type { AvailableExchangeConnection } from "../integrations/dwolla";
+import { createExchange, getAvailableExchangeConnections } from "../../integrations/dwolla";
+import type { AvailableExchangeConnection } from "../../integrations/dwolla";
 
 /**
  * Account Selection Page Component
