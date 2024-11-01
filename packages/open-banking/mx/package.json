@@ -1,0 +1,45 @@
+{
+  "name": "@open-banking-example/mx",
+  "version": "1.0.0",
+  "description": "Dwolla integration example that uses open banking with MX to verify a customer's bank account.",
+  "license": "MIT",
+  "author": "Dwolla, Inc.",
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "scripts": {
+    "build": "next build",
+    "checks": "../../../node_modules/.bin/tsc --pretty --noEmit && pnpm lint && pnpm prettier:check",
+    "clean": "../../../node_modules/.bin/rimraf \"{.next,node_modules,tsconfig.tsbuildinfo}\"",
+    "dev": "next dev",
+    "format": "../../../node_modules/.bin/prettier --config ../../../.prettierrc.json --write \"src/**/*.+(ts|tsx)\"",
+    "lint": "next lint --config ../../../.eslintrc.json",
+    "lint:fix": "next lint --config ../../../.eslintrc.json --fix",
+    "prettier:check": "../../../node_modules/.bin/prettier --check --config ../../../.prettierrc.json \"src/**/*.+(ts|tsx)\"",
+    "prettier:write": "../../../node_modules/.bin/prettier --config ../../../.prettierrc.json \"src/**/*.+(ts|tsx)\" --write",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@emotion/cache": "^11.11.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/lab": " 6.0.0-beta.14",
+    "@mui/material": "^6.1.6",
+    "@mui/material-nextjs": "^6.1.6",
+    "@mxenabled/web-widget-sdk": "^0.0.13",
+    "dwolla-v2": "^3.4.0",
+    "next": "14.2.4",
+    "react": "^18",
+    "react-dom": "^18",
+    "uuid": "^11.0.2"
+  },
+  "devDependencies": {
+    "@mxenabled/widget-post-message-definitions": "^1.4.0",
+    "@types/node": "^22.8.4",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5"
+  }
+}
