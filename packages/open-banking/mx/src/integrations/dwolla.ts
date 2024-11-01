@@ -115,7 +115,7 @@ export async function createExchangeSession(customerId: string): Promise<NextAPI
         const response = await dwolla.post(`customers/${customerId}/exchange-sessions`, requestBody);
         const location = response.headers.get("location");
         if (location) {
-            console.log("Exchange session created successfully. Location :", location);
+            console.log("Exchange session created successfully. Location:", location);
             return {
                 success: true,
                 message: "Exchange session created successfully",
@@ -194,7 +194,7 @@ export async function createExchange(customerId: string, availableConnectionToke
         const response = await dwolla.post(`customers/${customerId}/exchanges`, requestBody);
         const location = response.headers.get("location");
         if (location) {
-            console.log("Exchange created successfully. Location :", location);
+            console.log("Exchange created successfully. Location:", location);
             return {
                 success: true,
                 message: "Exchange  created successfully",

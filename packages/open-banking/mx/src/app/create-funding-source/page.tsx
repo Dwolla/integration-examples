@@ -121,9 +121,9 @@ export default function CreateFundingSourcePage() {
             });
         }
 
-        const fundingSourceUrl = await createFundingSourceHandler(formData, storedCustomerId, exchangeId);
+        const fundingSourceId = await createFundingSourceHandler(formData, storedCustomerId, exchangeId);
 
-        if (!fundingSourceUrl) {
+        if (!fundingSourceId) {
             return updateNetworkAlert({
                 alert: { severity: "error", message: "No Funding Source URL returned from createFundingSource()." },
                 networkState: NetworkState.NOT_LOADING
@@ -131,7 +131,7 @@ export default function CreateFundingSourcePage() {
         }
 
         updateNetworkAlert({
-            alert: { severity: "success", message: `Funding Source Location: ${fundingSourceUrl}.` },
+            alert: { severity: "success", message: `Funding Source ID: ${fundingSourceId}` },
             networkState: NetworkState.NOT_LOADING
         });
     };
@@ -151,8 +151,8 @@ export default function CreateFundingSourcePage() {
                             type="text"
                             error={missingRequiredKeys?.includes("name")}
                             fullWidth
-                            helperText={missingRequiredKeys?.includes("name") && "Name is required"}
-                            label="Name"
+                            helperText={missingRequiredKeys?.includes("name") && "Account Nickname is required"}
+                            label="Account Nickname"
                             name="name"
                             onChange={handleInputChanged}
                             required

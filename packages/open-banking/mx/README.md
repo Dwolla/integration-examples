@@ -16,9 +16,7 @@ This example project, built using [Next.js](https://nextjs.org), demonstrates op
 
 ## Using MX Connect
 
-When using MX Web Widget SDK to connect a bank account, there are two development options present that work with Dwolla: **MX Bank** and **MX Bank (OAuth)**. 
-
-Please keep in mind, to enable **MX Bank (OAuth)**, you must register through the MX Dashboard by completing the provided form. Please see [MX's website](https://docs.mx.com/resources/test-platform/) for all the different testing scenarios and credentials.
+When using MX Web Widget SDK to connect a bank account, there are two development options present that work with Dwolla: **MX Bank** and **MX Bank (OAuth)**.
 
 When using **MX Bank** in the Sandbox environment, you can use the following test credentials to simulate various scenarios. These credentials are provided by MX for sandbox testing purposes.
 
