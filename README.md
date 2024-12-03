@@ -14,7 +14,13 @@ You can find an exhaustive list of all example apps that this repository contain
 
 To get more information on installing and running a specific app, please click on its name, which will redirect you to its respective README.
 
-* [Mastercard](https://github.com/Dwolla/integration-examples/tree/main/packages/mastercard-token-exchange#readme)
-* [Plaid](https://github.com/Dwolla/integration-examples/tree/main/packages/plaid-funding-source#readme)
-* [MX](https://github.com/Dwolla/integration-examples/tree/main/packages/mx-token-exchange#readme)
-* [Flinks](https://github.com/Dwolla/integration-examples/tree/main/packages/flinks-token-exchange#readme)
+### Open Banking Examples:
+ * [Plaid](https://github.com/Dwolla/integration-examples/tree/main/packages/open-banking/plaid)
+ * [Visa](https://github.com/Dwolla/integration-examples/tree/main/packages/open-banking/visa)
+ * [MX](https://github.com/Dwolla/integration-examples/tree/main/packages/open-banking/mx)
+
+### Secure Exchange Examples
+* [Mastercard](https://github.com/Dwolla/integration-examples/tree/main/packages/secure-token-exchange/mastercard)
+* [Plaid](https://github.com/Dwolla/integration-examples/tree/main/packages/secure-token-exchange/plaid)
+* [MX](https://github.com/Dwolla/integration-examples/tree/main/packages/secure-token-exchange/mx)
+* [Flinks](https://github.com/Dwolla/integration-examples/tree/main/packages/secure-token-exchange/flinks)
