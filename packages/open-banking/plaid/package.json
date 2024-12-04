@@ -1,0 +1,37 @@
+{
+  "name": "@open-banking-example/plaid",
+  "version": "1.0.0",
+  "description": "Dwolla integration example that uses open banking with Plaid to verify a customer's bank account.",
+  "license": "MIT",
+  "author": "Dwolla, Inc.",
+  "engines": {
+    "node": ">=21.7.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "checks": "../../../node_modules/.bin/tsc --pretty --noEmit && pnpm lint && pnpm prettier:check",
+    "clean": "../../../node_modules/.bin/rimraf \"{.next,node_modules,tsconfig.tsbuildinfo}\"",
+    "format": "../../../node_modules/.bin/prettier --config ../../../.prettierrc.json --write \"src/**/*.+(ts|tsx)\"",
+    "lint": "next lint --config ../../../.eslintrc.json",
+    "lint:fix": "next lint --config ../../../.eslintrc.json --fix",
+    "prettier:check": "../../../node_modules/.bin/prettier --check --config ../../../.prettierrc.json \"src/**/*.+(ts|tsx)\"",
+    "prettier:write": "../../../node_modules/.bin/prettier --config ../../../.prettierrc.json \"src/**/*.+(ts|tsx)\" --write"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/lab": "6.0.0-beta.16",
+    "@mui/material": "^6.1.8",
+    "dwolla-v2": "^3.4.0",
+    "next": "^15.0.3",
+    "react": "^18.3.1",
+    "react-plaid-link": "^3.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.9.1",
+    "@types/react": "^18.3.12",
+    "typescript": "^5.6.3"
+  }
+}
