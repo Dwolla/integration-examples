@@ -16,7 +16,6 @@ To get more information on installing and running a specific app, please click o
 
 ### Open Banking Examples:
  * [Plaid](https://github.com/Dwolla/integration-examples/tree/main/packages/open-banking/plaid)
- * [Visa](https://github.com/Dwolla/integration-examples/tree/main/packages/open-banking/visa)
  * [MX](https://github.com/Dwolla/integration-examples/tree/main/packages/open-banking/mx)
 
 ### Secure Exchange Examples
