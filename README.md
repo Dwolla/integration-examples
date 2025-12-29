@@ -8,18 +8,11 @@ Each application makes use of the latest technologies by building itself on top 
 
 Before getting started, please note that many of our example apps share common dependencies—e.g., ESLint, Prettier, and TypeScript. As such, their configurations are held within the root project, with each app referencing its respective root file. This means that before you can use any of the example apps, you must first run `pnpm install` in the project root directory.
 
-## Example Applications
+## Browse by Goal (and Jump to Examples)
 
-You can find an exhaustive list of all example apps that this repository contains below.
+| Goal | Examples |
+| --- | --- |
+| Add a bank funding source (Open Banking) | <ul><li>[Plaid](packages/open-banking/plaid)</li><li>[MX](packages/open-banking/mx)</li></ul> |
+| Add a bank funding source (Secure Exchange / tokenized) | <ul><li>[Plaid](packages/secure-token-exchange/plaid) </li><li> [MX](packages/secure-token-exchange/mx) </li><li> [Mastercard](packages/secure-token-exchange/mastercard) </li><li> [Flinks](packages/secure-token-exchange/flinks) </li></ul> |
+| Add a card funding source & enable Push to Card payouts | <ul><li>[Checkout.com Flow](packages/push-to-card/checkout)</li></ul> |
 
-To get more information on installing and running a specific app, please click on its name, which will redirect you to its respective README.
-
-### Open Banking Examples:
- * [Plaid](https://github.com/Dwolla/integration-examples/tree/main/packages/open-banking/plaid)
- * [MX](https://github.com/Dwolla/integration-examples/tree/main/packages/open-banking/mx)
-
-### Secure Exchange Examples
-* [Mastercard](https://github.com/Dwolla/integration-examples/tree/main/packages/secure-token-exchange/mastercard)
-* [Plaid](https://github.com/Dwolla/integration-examples/tree/main/packages/secure-token-exchange/plaid)
-* [MX](https://github.com/Dwolla/integration-examples/tree/main/packages/secure-token-exchange/mx)
-* [Flinks](https://github.com/Dwolla/integration-examples/tree/main/packages/secure-token-exchange/flinks)
