@@ -30,7 +30,7 @@ export interface NextAPIResponse {
  * @see https://github.com/Dwolla/dwolla-v2-node?tab=readme-ov-file#initialization
  */
 const dwolla = new Dwolla({
-  serverIdx: getEnvironmentVariable("DWOLLA_ENV").toLowerCase() === "prod" ? 0 : 1,
+  server: getEnvironmentVariable("DWOLLA_ENV").toLowerCase() as "prod" | "sandbox",
   security: {
     clientID: getEnvironmentVariable("DWOLLA_KEY") ?? "",
     clientSecret: getEnvironmentVariable("DWOLLA_SECRET") ?? "",
@@ -43,14 +43,14 @@ const dwolla = new Dwolla({
  * @returns NextAPIResponse containing success status, optional message, and resource if successful.
  */
 export async function createCustomer(formData: FormData): Promise<NextAPIResponse> {
-    const requestBody: CreateCustomerOptions = {
-        firstName: formData.get("firstName") as string,
-        lastName: formData.get("lastName") as string,
-        email: formData.get("email") as string
-    };
 
     try {
-        const response = await dwolla.customers.create({ ...requestBody });
+        const response = await dwolla.customers.create({ 
+            type: "unverified", 
+            firstName: formData.get("firstName") as string,
+            lastName: formData.get("lastName") as string,
+            email: formData.get("email") as string  
+        });
         const location = response?.headers?.location;
         if (location) {
             console.log("Customer created successfully. Location:", location);

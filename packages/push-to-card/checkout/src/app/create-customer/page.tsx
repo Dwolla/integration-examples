@@ -85,8 +85,9 @@ export default function Page() {
         // Store customerId in session storage for use in creating an Exchange and a Funding Source
         sessionStorage.setItem("customerId", dwollaCustomerId);
 
-        // Navigate to /plaid-link with the Plaid exchange session URL
-        // router.push(`/plaid-link?linkToken=${encodeURIComponent(plaidLinkToken)}`);
+        // After customer creation, move to the Add Card flow, which will create a Checkout
+        // payment session and mount Flow to capture the card.
+        router.push("/add-card");
     };
 
     return (
