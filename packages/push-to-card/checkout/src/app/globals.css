@@ -193,10 +193,11 @@ button:hover,
 
 .code {
   font-family: ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: #cbd5e1;
+  color: #0f172a;
   padding: 6px 10px;
   border-radius: 8px;
+  font-size: x-small;
 }
 
 .muted {

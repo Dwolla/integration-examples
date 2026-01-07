@@ -67,23 +67,26 @@ export default function Page() {
      * @param formData The form data submitted by the user.
      */
     const onSubmitAction = async (formData: FormData) => {
-        if (!checkFormValidity()) return;
-        updateNetworkAlert({ networkState: NetworkState.LOADING });
+        // TODO: START un-comment after tesing --- 
+        // if (!checkFormValidity()) return;
+        // updateNetworkAlert({ networkState: NetworkState.LOADING });
 
-        const dwollaCustomerId = await createCustomerHandler(formData);
+        // const dwollaCustomerId = await createCustomerHandler(formData);
 
-        if (!dwollaCustomerId) {
-            return updateNetworkAlert({
-                alert: {
-                    severity: "error",
-                    message: "No Customer ID was returned from createCustomerHandler()"
-                },
-                networkState: NetworkState.NOT_LOADING
-            });
-        }
+        // if (!dwollaCustomerId) {
+        //     return updateNetworkAlert({
+        //         alert: {
+        //             severity: "error",
+        //             message: "No Customer ID was returned from createCustomerHandler()"
+        //         },
+        //         networkState: NetworkState.NOT_LOADING
+        //     });
+        // }
 
-        // Store customerId in session storage for use in creating an Exchange and a Funding Source
-        sessionStorage.setItem("customerId", dwollaCustomerId);
+        // // Store customerId in session storage for use in creating an Exchange and a Funding Source
+        // sessionStorage.setItem("customerId", dwollaCustomerId);
+
+        // TODO: END un-comment after tesing --- 
 
         // After customer creation, move to the Add Card flow, which will create a Checkout
         // payment session and mount Flow to capture the card.

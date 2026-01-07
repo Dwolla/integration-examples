@@ -3,22 +3,6 @@ import { Dwolla } from "dwolla";
 import { getEnvironmentVariable } from "./index";
 import { equalsIgnoreCase, getBaseUrl } from "../utils";
 
-export interface CreateCustomerOptions {
-    firstName: string;
-    lastName: string;
-    email: string;
-}
-export interface CreateExchangeOptions {
-    customerId: string;
-    exchangePartnerHref: string;
-    plaidPublicToken: string;
-}
-export interface CreateFundingSourceOptions {
-    customerId: string;
-    exchangeId: string;
-    name: string;
-    type: "checking" | "savings";
-}
 export interface NextAPIResponse {
     success: boolean;
     message?: string;
@@ -27,7 +11,6 @@ export interface NextAPIResponse {
 
 /**
  * Initializes the Dwolla client with the provided environment and API credentials.
- * @see https://github.com/Dwolla/dwolla-v2-node?tab=readme-ov-file#initialization
  */
 const dwolla = new Dwolla({
   server: getEnvironmentVariable("DWOLLA_ENV").toLowerCase() as "prod" | "sandbox",
@@ -73,87 +56,159 @@ export async function createCustomer(formData: FormData): Promise<NextAPIRespons
     }
 }
 
-// TODO: Implement further API calls as necessary 
 /**
- * Creates an exchange for a Customer
- * @param options - The options of type CreateExchangeOptions for creating the exchange.
+ * Creates a card funding source for a Customer using a Checkout.com card token.
+ * Returns the Location header if successful, otherwise undefined.
+ */
+export async function createCardFundingSource(
+  customerId: string,
+  cardToken: string,
+  billingAddress: {
+    address1: string;
+    city: string;
+    stateProvinceRegion: string;
+    country: string;
+    postalCode: string;
+  }
+): Promise<NextAPIResponse> {
+  const requestBody = {
+    cardToken,
+    name: "Checkout.com card",
+    cardDetails: {
+      billingAddress
+    }
+  };
+
+    try {
+        const response = await dwolla.customers.fundingSources.create({id: customerId, createCustomerFundingSource: requestBody});
+        const location = response?.headers?.location;
+        if (location) {
+            console.log("Card Funding Source created successfully. Location:", location);
+            return {
+                success: true,
+                message: "Card Funding Source created successfully",
+                resource: location?.[0] ?? undefined
+            };
+        }
+        return {
+            success: false,
+            message: "An error occurred while processing the response"
+        };
+    } catch (error) {
+        console.error("Error creating Dwolla Card Funding Source :", error);
+        return {
+            success: false,
+            message: "An error occurred while creating the card funding source. Please try again later."
+        };
+    }
+}
+
+/**
+ * Gets the settlement funding source for the Dwolla Account. This is required to send a payout to the card funding source.
  * @returns NextAPIResponse containing success status, optional message, and resource if successful.
  */
-// export async function createExchange(customerId: string, plaidPublicToken: string): Promise<NextAPIResponse> {
-//     const exchangePartnerHref = await getExchangePartnerHref();
-//     const requestBody = {
-//         _links: {
-//             "exchange-partner": {
-//                 href: exchangePartnerHref
-//             }
-//         },
-//         plaid: {
-//             publicToken: plaidPublicToken
-//         }
-//     };
+export async function getSettlementFundingSource(): Promise<NextAPIResponse> {
+    try {
+        // 1) Discover the main account from the API root.
+        const root = await dwolla.root.get();
+        const accountHref = root.links?.account?.href;
+        const accountId = accountHref?.split("/").pop();
 
-//     try {
-//         const response = await dwolla.post(`customers/${customerId}/exchanges`, requestBody);
-//         const location = response.headers.get("location");
-//         if (location) {
-//             console.log("Exchange created successfully. Location:", location);
-//             return {
-//                 success: true,
-//                 message: "Exchange  created successfully",
-//                 resource: location
-//             };
-//         }
-//         return {
-//             success: false
-//         };
-//     } catch (error) {
-//         console.error("Error creating Dwolla Exchange:", error);
-//         return {
-//             success: false,
-//             message: "An error occurred while creating the exchange"
-//         };
-//     }
-// }
+        if (!accountId) {
+            return {
+                success: false,
+                message: "Unable to determine Dwolla account from root response"
+            };
+        }
+
+        // 2) List funding sources for the account and locate the settlement (card-network) account.
+        const response = await dwolla.accounts.fundingSources.list({ id: accountId, removed: "false" });
+        const fundingSources = response.embedded?.fundingSources ?? [];
+
+        const settlement = fundingSources.find(
+            (fs) =>
+                fs.bankUsageType === "card-network" ||
+                equalsIgnoreCase(fs.bankUsageType ?? "", "card-network")
+        );
+
+        if (settlement?.links?.self?.href) {
+            console.log("Settlement Funding Source retrieved successfully. Location:", settlement.links.self.href);
+            return {
+                success: true,
+                message: "Settlement Funding Source retrieved successfully",
+                resource: settlement.links.self.href
+            };
+        }
+
+        return {
+            success: false,
+            message: "Settlement funding source not found for the Dwolla account"
+        };
+    } catch (error) {
+        console.error("Error retrieving Dwolla settlement funding source:", error);
+        return {
+            success: false,
+            message: "An error occurred while retrieving the settlement funding source"
+        };
+    }
+}
 
 /**
- * Creates a funding source for a Customer
- * @param options - The options of type CreateFundingSourceOptions for creating the funding source.
+ * Creates an payout to the card funding source
+ * @param cardFundingSourceId - The ID of the card funding source to send the payout to
+ * @param formData - The form data containing the amount to transfer
  * @returns NextAPIResponse containing success status, optional message, and resource if successful.
  */
-// export async function createFundingSource(options: CreateFundingSourceOptions): Promise<NextAPIResponse> {
-//     const { customerId, exchangeId, name, type } = options;
-//     const exchangeUrl = `${getBaseUrl()}/exchanges/${exchangeId}`;
+export async function sendPayout(cardFundingSourceId: string, formData: FormData): Promise<NextAPIResponse> {
+    // 1) Get the settlement funding source for the Dwolla Account
+    const settlementFundingSource = await getSettlementFundingSource();
+    if (!settlementFundingSource.success) {
+        return {
+            success: false,
+            message: "An error occurred while retrieving the settlement funding source"
+        };
+    }
 
-//     const requestBody = {
-//         _links: {
-//             exchange: {
-//                 href: exchangeUrl
-//             }
-//         },
-//         bankAccountType: type,
-//         name: name
-//     };
+    // 2) Create the transfer
+    const amount = (formData.get("amount") as string | null) ?? "0.01";
 
-//     try {
-//         const response = await dwolla.post(`customers/${customerId}/funding-sources`, requestBody);
-//         const location = response.headers.get("location");
-//         if (location) {
-//             console.log("Funding source created successfully. Location:", location);
-//             return {
-//                 success: true,
-//                 message: "Funding source created successfully",
-//                 resource: location
-//             };
-//         }
-//         return {
-//             success: false,
-//             message: "An error occurred while processing the response"
-//         };
-//     } catch (error) {
-//         console.error("Error creating Dwolla Funding Source:", error);
-//         return {
-//             success: false,
-//             message: "An error occurred while creating the funding source. Please try again later."
-//         };
-//     }
-// }
+    const requestBody = {
+        links: {
+            source: {
+                href: settlementFundingSource.resource
+            },
+            destination: {
+                href: getBaseUrl() + "/funding-sources/" + cardFundingSourceId
+            }
+        },
+        amount: {
+            value: amount,
+            currency: "USD"
+        }
+    };
+
+    console.log("Transfer request body:", requestBody);
+
+    try {
+        const response = await dwolla.transfers.create({ requestBody });
+        const location = response?.headers?.location;
+        if (location) {
+            console.log("Transfer created successfully. Location:", location);
+            return {
+                success: true,
+                message: "Transfer created successfully",
+                resource: location?.[0] ?? undefined
+            };
+        }
+        return {
+            success: false,
+            message: "An error occurred while processing the response"
+        };
+    } catch (error) {
+        console.error("Error creating Dwolla Transfer:", error);
+        return {
+            success: false,
+            message: "An error occurred while creating the transfer. Please try again later."
+        };
+    }
+}
