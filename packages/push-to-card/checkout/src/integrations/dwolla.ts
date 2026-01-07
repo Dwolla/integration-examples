@@ -3,6 +3,13 @@ import { Dwolla } from "dwolla";
 import { getEnvironmentVariable } from "./index";
 import { equalsIgnoreCase, getBaseUrl } from "../utils";
 
+
+export interface CreateCustomerOptions {
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
 export interface NextAPIResponse {
     success: boolean;
     message?: string;
