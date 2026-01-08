@@ -24,6 +24,7 @@
     "@checkout.com/checkout-web-components": "^1.7.1",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
+    "@mui/icons-material": "^7.3.7",
     "@mui/lab": "6.0.0-beta.16",
     "@mui/material": "^6.1.8",
     "checkout-sdk-node": "^3.0.3",

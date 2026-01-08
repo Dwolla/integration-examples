@@ -4,6 +4,20 @@ import Link from "next/link";
 import { Box, Button, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
+/**
+ * Landing Page Component for Push to Card Example
+ * 
+ * This page provides an overview of the Push to Card integration flow:
+ * 1. Create Customer - Establish a Dwolla Customer to receive the payout
+ * 2. Add Debit Card - Capture card details via Checkout.com Flow
+ * 3. Send Payout - Initiate transfer from settlement account to card
+ * 
+ * The page includes:
+ * - Step-by-step visual walkthrough of the integration
+ * - Prerequisites reminder about settlement account configuration
+ * - Links to relevant Dwolla documentation
+ * - Start button to begin the flow
+ */
 export default function Home() {
     const cardSx = {
         height: "100%",

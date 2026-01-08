@@ -1,7 +1,7 @@
 "use server";
 import { Dwolla } from "dwolla";
 import { getEnvironmentVariable } from "./index";
-import { equalsIgnoreCase, getBaseUrl } from "../utils";
+import { equalsIgnoreCase } from "../utils";
 
 
 export interface CreateCustomerOptions {
@@ -28,7 +28,7 @@ const dwolla = new Dwolla({
 });
 
 /**
- * Creates a Customer resource.
+ * Creates an Unverified Customer resource.
  * @param formData - FormData containing firstName, lastName, and email fields.
  * @returns NextAPIResponse containing success status, optional message, and resource if successful.
  */
@@ -41,6 +41,8 @@ export async function createCustomer(formData: FormData): Promise<NextAPIRespons
             lastName: formData.get("lastName") as string,
             email: formData.get("email") as string  
         });
+        
+        // Dwolla returns the new Customer's URL in the Location header
         const location = response?.headers?.location;
         if (location) {
             console.log("Customer created successfully. Location:", location);
@@ -166,7 +168,7 @@ export async function getSettlementFundingSource(): Promise<NextAPIResponse> {
  * @param formData - The form data containing the amount to transfer
  * @returns NextAPIResponse containing success status, optional message, and resource if successful.
  */
-export async function sendPayout(cardFundingSourceId: string, formData: FormData): Promise<NextAPIResponse> {
+export async function sendPayout(cardFundingSourceResource: string , formData: FormData): Promise<NextAPIResponse> {
     // 1) Get the settlement funding source for the Dwolla Account
     const settlementFundingSource = await getSettlementFundingSource();
     if (!settlementFundingSource.success) {
@@ -185,7 +187,7 @@ export async function sendPayout(cardFundingSourceId: string, formData: FormData
                 href: settlementFundingSource.resource
             },
             destination: {
-                href: getBaseUrl() + "/funding-sources/" + cardFundingSourceId
+                href: cardFundingSourceResource
             }
         },
         amount: {
