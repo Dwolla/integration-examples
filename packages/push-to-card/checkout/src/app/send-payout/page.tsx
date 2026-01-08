@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
-import { Box, Card, CardContent, CardHeader, TextField, Alert, Typography, IconButton, Tooltip } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, TextField, Alert, Typography, IconButton, Tooltip, Checkbox, FormControlLabel } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Grid from "@mui/material/Grid2";
 import { createPaymentSession, exchangePaymentForCardToken } from "@/integrations/checkout";
@@ -68,6 +68,10 @@ export default function AddCardPage() {
   
   // Flag indicating whether the user has clicked "Start checkout"
   const [formReady, setFormReady] = useState(false);
+
+  // Explicit consent to store card details
+  const [consentGiven, setConsentGiven] = useState(false);
+  const [consentRecordedAt, setConsentRecordedAt] = useState<string | null>(null);
 
   /**
    * Retrieve the Dwolla Customer ID from session storage.
@@ -284,6 +288,19 @@ export default function AddCardPage() {
                 </Grid>
               </Grid>
 
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={consentGiven}
+                    onChange={(e) => setConsentGiven(e.target.checked)}
+                    name="consent"
+                    color="primary"
+                  />
+                }
+                label="I consent to storing my card details to complete payouts."
+                sx={{ mb: 1 }}
+              />
+
               <LoadingButton
                 type="button"
                 fullWidth
@@ -292,11 +309,17 @@ export default function AddCardPage() {
                   !amount ||
                   Number(amount) <= 0 ||
                   Object.values(billing).some((v) => !v) ||
-                  formReady
+                  formReady ||
+                  !consentGiven
                 }
                 size="large"
                 variant="contained"
-                onClick={() => setFormReady(true)}
+                onClick={() => {
+                  const timestamp = new Date().toISOString();
+                  setConsentRecordedAt(timestamp);
+                  setStatus(`Consent recorded at ${timestamp}. Proceeding to checkout...`);
+                  setFormReady(true);
+                }}
                 sx={{ mt: 2 }}
               >
                 Start checkout
@@ -379,6 +402,11 @@ export default function AddCardPage() {
             </Box>
 
             {/* Status Updates */}
+            {consentRecordedAt && (
+              <Alert severity="success" sx={{ mt: 2 }}>
+                Consent captured at {consentRecordedAt}
+              </Alert>
+            )}
             {status && (
               <Alert severity="info" sx={{ mt: 2 }}>
                 Status: {status}
