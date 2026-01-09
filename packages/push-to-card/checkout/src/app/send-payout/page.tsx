@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
-import { Box, Card, CardContent, CardHeader, TextField, Alert, Typography, IconButton, Tooltip, Checkbox, FormControlLabel, Stepper, Step, StepLabel } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, TextField, Alert, Typography, IconButton, Tooltip, Checkbox, FormControlLabel, Stepper, Step, StepLabel, Chip, Table, TableBody, TableRow, TableCell, Divider, Button } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Grid from "@mui/material/Grid2";
 import { createPaymentSession, exchangePaymentForCardToken } from "@/integrations/checkout";
@@ -46,6 +46,31 @@ export default function AddCardPage() {
   
   // Current status message to display to the user
   const [status, setStatus] = useState<string | null>(null);
+
+  // Timeline of key events shown in the event log
+  const [events, setEvents] = useState<
+    Array<{ id: string; message: string; severity: "info" | "success" | "error"; timestamp: string }>
+  >([]);
+
+  /**
+   * Record a status update and add it to the event log.
+   */
+  const logEvent = useCallback(
+    (message: string, severity: "info" | "success" | "error" = "info") => {
+      const timestamp = new Date().toISOString();
+      setStatus(message);
+      setEvents((prev) => [
+        ...prev,
+        {
+          id: `${timestamp}-${prev.length}`,
+          message,
+          severity,
+          timestamp,
+        },
+      ]);
+    },
+    []
+  );
   
   // URL of the created Dwolla card funding source
   const [cardFundingSource, setCardFundingSource] = useState<string | null>(null);
@@ -76,8 +101,16 @@ export default function AddCardPage() {
   /**
    * Retrieve the Dwolla Customer ID from session storage.
    * This ID was stored in the previous step (create-customer page).
+   * 
+   * Note: we load this in an effect to avoid SSR/client markup mismatches.
    */
-  const storedCustomerId = typeof window !== "undefined" ? sessionStorage.getItem("customerId") : null;
+  const [storedCustomerId, setStoredCustomerId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Defer sessionStorage access to the client to keep hydration stable.
+    const id = sessionStorage.getItem("customerId");
+    setStoredCustomerId(id);
+  }, []);
 
 
   /**
@@ -115,31 +148,31 @@ export default function AddCardPage() {
       paymentSession: session,
       onPaymentCompleted: async (_component: any, paymentResponse: any) => {
         // Step 1: Exchange the payment ID for a card token
-        setStatus("Fetching card token from Checkout.com...");
+        logEvent("Fetching card token from Checkout.com...");
         const cardToken = await exchangePaymentForCardToken(paymentResponse.id);
 
         // Step 2: Create a Dwolla card funding source with the token
-        setStatus("Creating Dwolla card funding source...");
+        logEvent("Creating Dwolla card funding source...");
         const fundingSourceLocation = await createCardFundingSource(
           storedCustomerId ?? "",
           cardToken,  
           billing
         );
         setCardFundingSource(fundingSourceLocation.resource ?? null);
-        setStatus("Card funding source created");
+        logEvent("Card funding source created", "success");
 
         // Step 3: Initiate the Push to Card transfer
-        setStatus("Sending payout...");
+        logEvent("Sending payout...");
         const fd = new FormData();
         fd.set("amount", amount);
         const transferResponse = await sendPayout(fundingSourceLocation.resource ?? "", fd);
       
         if (!transferResponse.success) {
-          setStatus("An error occurred while sending the payout");
+          logEvent("An error occurred while sending the payout", "error");
           return;
         }
         setTransfer(transferResponse.resource ?? null);
-        setStatus("Transfer created successfully ✅");
+        logEvent("Transfer created successfully ✅", "success");
       },
       
       /**
@@ -152,14 +185,14 @@ export default function AddCardPage() {
        */
       onError: (_component: any, error: unknown) => {
         console.error("Flow error", error);
-        setStatus("Flow error");
+        logEvent("Flow error", "error");
       }
     });
 
     // Create the Flow component and mount it to the DOM
     const flowComponent = checkout.create("flow");
     flowComponent.mount(document.getElementById("card-capture-container"));
-  }, [amount, billing, storedCustomerId]);
+  }, [amount, billing, storedCustomerId, logEvent]);
 
   /**
    * Effect to initialize the payment session and load Flow when user clicks "Start checkout".
@@ -173,13 +206,13 @@ export default function AddCardPage() {
     if (!formReady || paymentSession) return;
     
     (async () => {
-      setStatus("Creating payment session...");
+      logEvent("Creating payment session...");
       const session = await createPaymentSession(); 
       setPaymentSession(session);
-      setStatus("Session ready.");    
+      logEvent("Session ready.");    
       await loadFlow(session);
     })();
-  }, [formReady, paymentSession, loadFlow]);
+  }, [formReady, paymentSession, loadFlow, logEvent]);
 
   /**
    * Dynamically loads a JavaScript file from a CDN.
@@ -225,6 +258,28 @@ export default function AddCardPage() {
   return (
     <main className="layout stack">
       <h1>Add debit card and send payout</h1>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+        {storedCustomerId ? (
+          <>
+            <Typography variant="body2" color="text.secondary">
+              Payout will go to Customer:
+            </Typography>
+            <Chip
+              label={storedCustomerId}
+              size="small"
+              onClick={() => navigator.clipboard.writeText(storedCustomerId)}
+              onDelete={() => navigator.clipboard.writeText(storedCustomerId)}
+              deleteIcon={<ContentCopyIcon fontSize="small" />}
+              sx={{ cursor: "pointer" }}
+              variant="outlined"
+            />
+          </>
+        ) : (
+          <Alert severity="warning" sx={{ py: 0, alignItems: "center" }}>
+            Customer ID missing. Please create a customer first.
+          </Alert>
+        )}
+      </Box>
       <Stepper activeStep={getActiveStep()} alternativeLabel sx={{ mb: 2 }}>
         {steps.map(({ label, owner }) => (
           <Step key={label}>
@@ -430,7 +485,7 @@ export default function AddCardPage() {
                 onClick={() => {
                   const timestamp = new Date().toISOString();
                   setConsentRecordedAt(timestamp);
-                  setStatus(`Consent recorded at ${timestamp}. Proceeding to checkout...`);
+                  logEvent(`Consent recorded at ${timestamp}. Proceeding to checkout...`, "success");
                   setFormReady(true);
                 }}
                 sx={{ mt: 2 }}
@@ -471,33 +526,69 @@ export default function AddCardPage() {
         </Box>
       </Box>
 
-      {/* Developer documentation */}
-      {status && (
-      <Card sx={{ padding: 3 }}>
-          <CardContent>
-            {/* Status Updates */}
-            {consentRecordedAt && (
-              <Alert severity="success" sx={{ mt: 2 }}>
-                Consent captured at {consentRecordedAt}
-              </Alert>
-            )}
-            {status && (
-              <Alert severity="info" sx={{ mt: 2 }}>
-                Status: {status}
-              </Alert>
-            )}
-            {cardFundingSource && (
-              <Alert severity="success" sx={{ mt: 2 }}>
-                Funding source created: <span className="code">{cardFundingSource}</span>
-              </Alert>
-            )}
-            {transfer && (
-              <Alert severity="success" sx={{ mt: 2 }}>
-                Transfer created: <span className="code">{transfer}</span>
-              </Alert>
-            )}
-          </CardContent>
-      </Card>
+      {/* Events log */}
+      {(events.length > 0 || consentRecordedAt || cardFundingSource || transfer) && (
+        <Card sx={{ p: 3, mt: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Events log
+          </Typography>
+
+          {events.length > 0 && (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.25, mb: 2 }}>
+              {events.map(({ id, message, severity, timestamp }) => (
+                <Alert key={id} severity={severity}>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5 }}>
+                    {new Date(timestamp).toLocaleTimeString()}
+                  </Typography>
+                  <Typography variant="body2">{message}</Typography>
+                </Alert>
+              ))}
+            </Box>
+          )}
+
+          {transfer && (
+            <Card
+              variant="outlined"
+              sx={{
+                bgcolor: "#ffffff",
+                borderColor: "#e0e0e0",
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                  ✅ Payout initiated successfully
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+                <Table size="small" sx={{ mb: 2 }}>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell sx={{ width: 180, fontWeight: 600 }}>Transfer ID</TableCell>
+                      <TableCell>{transfer.split("/").pop()}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600 }}>Amount</TableCell>
+                      <TableCell>${amount}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600 }}>Funding source</TableCell>
+                      <TableCell>{cardFundingSource?.split("/").pop() ?? "—"}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+                <Button
+                  component="a"
+                  href={`https://dashboard-sandbox.dwolla.com/transfers/${transfer.split("/").pop()}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  variant="outlined"
+                  size="small"
+                >
+                  View in Dashboard
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </Card>
       )}
     </main>
   );
