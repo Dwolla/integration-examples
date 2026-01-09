@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
-import { Box, Card, CardContent, CardHeader, TextField, Alert, Typography, IconButton, Tooltip, Checkbox, FormControlLabel } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, TextField, Alert, Typography, IconButton, Tooltip, Checkbox, FormControlLabel, Stepper, Step, StepLabel } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Grid from "@mui/material/Grid2";
 import { createPaymentSession, exchangePaymentForCardToken } from "@/integrations/checkout";
@@ -201,9 +201,57 @@ export default function AddCardPage() {
     });
   }
 
+  const steps = [
+    { label: "Create payment session", owner: "Checkout API" },
+    { label: "Capture card in Flow", owner: "Checkout Flow" },
+    { label: "Exchange payment for card token", owner: "Checkout API" },
+    { label: "Create Dwolla card funding source", owner: "Dwolla API" },
+    { label: "Send payout", owner: "Dwolla API" },
+  ];
+
+  const getActiveStep = () => {
+    if (transfer || status?.includes("Transfer created")) return 4;
+    if (status?.includes("Sending payout")) return 4;
+    if (cardFundingSource || status?.includes("Card funding source created")) return 3;
+    if (status?.includes("Creating Dwolla card funding source")) return 3;
+    if (status?.includes("Fetching card token")) return 2;
+    if (paymentSession || status?.includes("Session ready")) return 1;
+    return 0;
+  };
+
   return (
     <main className="layout stack">
       <h1>Add debit card and send payout</h1>
+      <Stepper activeStep={getActiveStep()} alternativeLabel sx={{ mb: 2 }}>
+        {steps.map(({ label, owner }) => (
+          <Step key={label}>
+            <StepLabel>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                {label}
+              </Typography>
+              <Box
+                component="span"
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                  mt: 0.25,
+                  px: 0.75,
+                  py: 0.25,
+                  borderRadius: 1,
+                  bgcolor: "action.hover",
+                  color: "text.secondary",
+                  fontSize: "0.7rem",
+                  letterSpacing: 0.4,
+                  textTransform: "uppercase",
+                }}
+              >
+                {owner}
+              </Box>
+            </StepLabel>
+          </Step>
+        ))}
+      </Stepper>
       <Box
         sx={{
           display: "grid",
@@ -322,7 +370,7 @@ export default function AddCardPage() {
                 }}
                 sx={{ mt: 2 }}
               >
-                Start checkout
+                Add card and send payout
               </LoadingButton>
             </Box>
           </CardContent>
