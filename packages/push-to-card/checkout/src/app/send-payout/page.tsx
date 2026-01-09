@@ -209,6 +209,9 @@ export default function AddCardPage() {
     { label: "Send payout", owner: "Dwolla API" },
   ];
 
+  const nextYearTwoDigit = String(new Date().getFullYear() + 1).slice(-2);
+  const exampleExpiry = `12/${nextYearTwoDigit}`;
+
   const getActiveStep = () => {
     if (transfer || status?.includes("Transfer created")) return 4;
     if (status?.includes("Sending payout")) return 4;
@@ -252,13 +255,75 @@ export default function AddCardPage() {
           </Step>
         ))}
       </Stepper>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-          gap: 3,
-        }}
-      >
+      <Box sx={{ position: "relative" }}>
+        {formReady && (
+          <Box
+            sx={{
+              position: { xs: "static", md: "absolute" },
+              top: { md: 0 },
+              left: { md: "calc(100% + 16px)" },
+              zIndex: 2,
+              width: { xs: "100%", md: 350 },
+              mb: { xs: 2, md: 0 },
+            }}
+          >
+            <Card variant="outlined" sx={{ borderStyle: "dashed" }}>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+                  Test cards
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.75 }}>
+                  <Typography variant="body2" sx={{ fontFamily: "monospace", fontSize: "0.9rem" }}>
+                    4024 7644 4997 1519
+                  </Typography>
+                  <Tooltip title="Copy Visa">
+                    <IconButton
+                      size="small"
+                      onClick={() => navigator.clipboard.writeText("4024764449971519")}
+                      sx={{ p: 0.5 }}
+                    >
+                      <ContentCopyIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Typography variant="caption" color="text.secondary">
+                    Visa
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Typography variant="body2" sx={{ fontFamily: "monospace", fontSize: "0.9rem" }}>
+                    5318 7730 1249 0080
+                  </Typography>
+                  <Tooltip title="Copy Mastercard">
+                    <IconButton
+                      size="small"
+                      onClick={() => navigator.clipboard.writeText("5318773012490080")}
+                      sx={{ p: 0.5 }}
+                    >
+                      <ContentCopyIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Typography variant="caption" color="text.secondary">
+                    Mastercard
+                  </Typography>
+                </Box>
+                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+                  Exp: any future date (e.g. {exampleExpiry})
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+                  CVV: any 3 digits (e.g. 123)
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+        )}
+
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gap: 3,
+          }}
+        >
         <Card sx={{ padding: 3 }}>
           <CardHeader title="Payment details" />
           <CardContent>
@@ -378,77 +443,38 @@ export default function AddCardPage() {
 
         <Card sx={{ padding: 3 }}>
           <CardHeader title="Card capture" />
-          {!formReady ? (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  minHeight: 300,
-                  textAlign: "center",
-                  color: "text.secondary",
-                }}
-              >
-                <Typography variant="h1" sx={{ mb: 2, opacity: 0.3 }}>
-                  💳
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Complete payment details to begin card capture
-                </Typography>
-              </Box>
-            ) : (
-              <div id="card-capture-container" />
-            )}
+          <CardContent>
+            {!formReady ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: 300,
+                    textAlign: "center",
+                    color: "text.secondary",
+                  }}
+                >
+                  <Typography variant="h1" sx={{ mb: 2, opacity: 0.3 }}>
+                    💳
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Complete payment details to begin card capture
+                  </Typography>
+                </Box>
+              ) : (
+                <div id="card-capture-container" />
+              )}
+          </CardContent>
         </Card>
+        </Box>
       </Box>
 
       {/* Developer documentation */}
       {status && (
       <Card sx={{ padding: 3 }}>
           <CardContent>
-            {/* Test Card Details */}
-            <Box sx={{ mb: 2, p: 2, bgcolor: "action.hover", borderRadius: 1 }}>
-              <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
-                Test Cards
-              </Typography>
-              
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
-                <Typography variant="body2" sx={{ fontFamily: "monospace", fontSize: "0.9rem" }}>
-                  4024 7644 4997 1519
-                </Typography>
-                <Tooltip title="Copy Visa">
-                  <IconButton 
-                    size="small" 
-                    onClick={() => navigator.clipboard.writeText("4024764449971519")}
-                    sx={{ p: 0.5 }}
-                  >
-                    <ContentCopyIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Typography variant="caption" color="text.secondary">Visa</Typography>
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Typography variant="body2" sx={{ fontFamily: "monospace", fontSize: "0.9rem" }}>
-                  5318 7730 1249 0080
-                </Typography>
-                <Tooltip title="Copy Mastercard">
-                  <IconButton 
-                    size="small" 
-                    onClick={() => navigator.clipboard.writeText("5318773012490080")}
-                    sx={{ p: 0.5 }}
-                  >
-                    <ContentCopyIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Typography variant="caption" color="text.secondary">Mastercard</Typography>
-                
-              </Box>
-              <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
-               Exp: any future date, CVV: any 3 digits 
-              </Typography>
-            </Box>
-
             {/* Status Updates */}
             {consentRecordedAt && (
               <Alert severity="success" sx={{ mt: 2 }}>
