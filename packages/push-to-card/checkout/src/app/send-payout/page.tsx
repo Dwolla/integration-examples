@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
-import { Box, Card, CardContent, CardHeader, TextField, Alert, Typography, IconButton, Tooltip, Checkbox, FormControlLabel, Stepper, Step, StepLabel, Chip, Table, TableBody, TableRow, TableCell, Divider, Button } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, TextField, Alert, Typography, IconButton, Tooltip, Stepper, Step, StepLabel, Chip, Table, TableBody, TableRow, TableCell, Divider, Button } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Grid from "@mui/material/Grid2";
 import { createPaymentSession, exchangePaymentForCardToken } from "@/integrations/checkout";
@@ -93,10 +93,6 @@ export default function AddCardPage() {
   
   // Flag indicating whether the user has clicked "Start checkout"
   const [formReady, setFormReady] = useState(false);
-
-  // Explicit consent to store card details
-  const [consentGiven, setConsentGiven] = useState(false);
-  const [consentRecordedAt, setConsentRecordedAt] = useState<string | null>(null);
 
   /**
    * Retrieve the Dwolla Customer ID from session storage.
@@ -456,19 +452,6 @@ export default function AddCardPage() {
                 </Grid>
               </Grid>
 
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={consentGiven}
-                    onChange={(e) => setConsentGiven(e.target.checked)}
-                    name="consent"
-                    color="primary"
-                  />
-                }
-                label="I consent to storing my card details to complete payouts."
-                sx={{ mb: 1 }}
-              />
-
               <LoadingButton
                 type="button"
                 fullWidth
@@ -477,15 +460,11 @@ export default function AddCardPage() {
                   !amount ||
                   Number(amount) <= 0 ||
                   Object.values(billing).some((v) => !v) ||
-                  formReady ||
-                  !consentGiven
+                  formReady
                 }
                 size="large"
                 variant="contained"
                 onClick={() => {
-                  const timestamp = new Date().toISOString();
-                  setConsentRecordedAt(timestamp);
-                  logEvent(`Consent recorded at ${timestamp}. Proceeding to checkout...`, "success");
                   setFormReady(true);
                 }}
                 sx={{ mt: 2 }}
@@ -527,7 +506,7 @@ export default function AddCardPage() {
       </Box>
 
       {/* Events log */}
-      {(events.length > 0 || consentRecordedAt || cardFundingSource || transfer) && (
+      {(events.length > 0 || cardFundingSource || transfer) && (
         <Card sx={{ p: 3, mt: 2 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Events log
