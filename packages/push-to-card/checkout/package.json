@@ -29,7 +29,7 @@
     "@mui/material": "^6.1.8",
     "checkout-sdk-node": "^3.0.3",
     "dwolla": "^1.0.2",
-    "next": "^15.0.3",
+    "next": "^16.1.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
