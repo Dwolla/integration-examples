@@ -30,7 +30,7 @@
         "@mui/icons-material": "^5.15.12",
         "@mui/lab": "5.0.0-alpha.167",
         "@mui/material": "^5.15.12",
-        "axios": "^1.6.7",
+        "axios": "^1.13.5",
         "core-js": "^3.36.0",
         "dwolla-v2": "4.0.0-ts-alpha.0",
         "form-data": "^4.0.0",
