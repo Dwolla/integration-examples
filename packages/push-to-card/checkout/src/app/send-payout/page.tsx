@@ -5,8 +5,14 @@ import { LoadingButton } from "@mui/lab";
 import { Box, Card, CardContent, CardHeader, TextField, Alert, Typography, IconButton, Tooltip, Stepper, Step, StepLabel, Chip, Table, TableBody, TableRow, TableCell, Divider, Button } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Grid from "@mui/material/Grid2";
-import { createPaymentSession, exchangePaymentForCardToken } from "@/integrations/checkout";
-import { createCardFundingSource, sendPayout } from "@/integrations/dwolla";
+import {
+  type ExternalProviderSessionData,
+  createCardFundingSource,
+  createExchange,
+  createExchangeSession,
+  getExchangeSession,
+  sendPayout
+} from "@/integrations/dwolla";
 
 /**
  * Type declaration for Checkout.com Web Components SDK.
@@ -41,8 +47,8 @@ declare global {
  * 
  */
 export default function AddCardPage() {
-  // Payment session object returned by Checkout.com
-  const [paymentSession, setPaymentSession] = useState<any>(null);
+  // Payment session from Dwolla exchange-session (externalProviderSessionData) for Flow
+  const [paymentSession, setPaymentSession] = useState<ExternalProviderSessionData | null>(null);
   
   // Current status message to display to the user
   const [status, setStatus] = useState<string | null>(null);
@@ -75,14 +81,17 @@ export default function AddCardPage() {
   // URL of the created Dwolla card funding source
   const [cardFundingSource, setCardFundingSource] = useState<string | null>(null);
   
-  // URL of the created Dwolla transfer
-  const [transfer, setTransfer] = useState<any>(null);
+  // URL of the created Dwolla transfer (Location header from create transfer)
+  const [transfer, setTransfer] = useState<string | null>(null);
   
   // Payout amount in USD (default: $100.00)
   const [amount, setAmount] = useState("100.00");
   
+  // Cardholder name (required for funding source creation)
+  const [firstName, setFirstName] = useState("Jane");
+  const [lastName, setLastName] = useState("Doe");
+
   // Billing address for the card (required by Dwolla)
-  // Pre-filled with sample data for easier testing
   const [billing, setBilling] = useState({
     address1: "123 Main St",
     city: "Des Moines",
@@ -125,51 +134,60 @@ export default function AddCardPage() {
    * 
    * @param session - The payment session object from Checkout.com
    */
-  const loadFlow = useCallback(async (session: any) => {
+  const loadFlow = useCallback(async (session: ExternalProviderSessionData) => {
     // Load the Checkout.com Web Components SDK if not already loaded.
     // This script provides the Flow component for secure card capture.
     if (!window.CheckoutWebComponents) {
       await loadScript("https://checkout-web-components.checkout.com/index.js");
     }
 
-    // Initialize the Checkout.com SDK with our configuration
+    // Initialize the Checkout.com SDK. API returns externalProviderSessionData in the shape Flow expects; pass through.
     const checkout = await window.CheckoutWebComponents({
       // Public key - safe to expose client-side
       publicKey: process.env.NEXT_PUBLIC_CKO_PUBLIC_KEY || "",
-      
       // Environment - "sandbox" for testing, "production" for live
       environment: process.env.NEXT_PUBLIC_CKO_ENV || "sandbox",
-      
       // Payment session created server-side
       paymentSession: session,
-      onPaymentCompleted: async (_component: any, paymentResponse: any) => {
-        // Step 1: Exchange the payment ID for a card token
-        logEvent("Fetching card token from Checkout.com...");
-        const cardToken = await exchangePaymentForCardToken(paymentResponse.id);
+        componentOptions: {
+          card: {
+            displayCardholderName: "hidden"
+          }
+        },
+        onPaymentCompleted: async (_component: any, paymentResponse: any) => {
+          // Use the payment ID (pay_xxx) from Flow directly when creating the Exchange
+          logEvent("Creating Dwolla exchange...");
+          const exchangeResult = await createExchange(storedCustomerId ?? "", paymentResponse.id);
+          if (!exchangeResult.success || !exchangeResult.resource) {
+            logEvent(exchangeResult.message ?? "Failed to create exchange", "error");
+            return;
+          }
 
-        // Step 2: Create a Dwolla card funding source with the token
-        logEvent("Creating Dwolla card funding source...");
-        const fundingSourceLocation = await createCardFundingSource(
-          storedCustomerId ?? "",
-          cardToken,  
-          billing
-        );
-        setCardFundingSource(fundingSourceLocation.resource ?? null);
-        logEvent("Card funding source created", "success");
+          logEvent("Creating Dwolla card funding source...");
+          const fundingSourceResult = await createCardFundingSource(
+            storedCustomerId ?? "",
+            exchangeResult.resource,
+            "My Visa Debit Card",
+            { firstName, lastName, billingAddress: billing }
+          );
+          setCardFundingSource(fundingSourceResult.resource ?? null);
+          if (!fundingSourceResult.success || !fundingSourceResult.resource) {
+            logEvent(fundingSourceResult.message ?? "Failed to create funding source", "error");
+            return;
+          }
+          logEvent("Card funding source created", "success");
 
-        // Step 3: Initiate the Push to Card transfer
-        logEvent("Sending payout...");
-        const fd = new FormData();
-        fd.set("amount", amount);
-        const transferResponse = await sendPayout(fundingSourceLocation.resource ?? "", fd);
-      
-        if (!transferResponse.success) {
-          logEvent("An error occurred while sending the payout", "error");
-          return;
-        }
-        setTransfer(transferResponse.resource ?? null);
-        logEvent("Transfer created successfully ✅", "success");
-      },
+          logEvent("Sending payout...");
+          const fd = new FormData();
+          fd.set("amount", amount);
+          const transferResponse = await sendPayout(fundingSourceResult.resource, fd);
+          if (!transferResponse.success) {
+            logEvent("An error occurred while sending the payout", "error");
+            return;
+          }
+          setTransfer(transferResponse.resource ?? null);
+          logEvent("Transfer created successfully ✅", "success");
+        },
       
       /**
        * onError - Called if there's an error in the Flow component
@@ -188,7 +206,7 @@ export default function AddCardPage() {
     // Create the Flow component and mount it to the DOM
     const flowComponent = checkout.create("flow");
     flowComponent.mount(document.getElementById("card-capture-container"));
-  }, [amount, billing, storedCustomerId, logEvent]);
+  }, [amount, billing, firstName, lastName, storedCustomerId, logEvent]);
 
   /**
    * Effect to initialize the payment session and load Flow when user clicks "Start checkout".
@@ -199,16 +217,33 @@ export default function AddCardPage() {
    */
   useEffect(() => {
     // Only run if the form is ready and we haven't already created a session
-    if (!formReady || paymentSession) return;
-    
+    if (!formReady || paymentSession || !storedCustomerId) return;
+
     (async () => {
-      logEvent("Creating payment session...");
-      const session = await createPaymentSession(); 
-      setPaymentSession(session);
-      logEvent("Session ready.");    
-      await loadFlow(session);
+      logEvent("Creating exchange session...");
+      const createResult = await createExchangeSession(storedCustomerId);
+      if (!createResult.success || !createResult.resource) {
+        const msg = createResult.success ? "Failed to create exchange session" : (createResult.message ?? "Failed to create exchange session");
+        logEvent(msg, "error");
+        return;
+      }
+      const exchangeSessionId = createResult.resource.split("/").filter(Boolean).pop();
+      if (!exchangeSessionId) {
+        logEvent("Invalid exchange-session Location", "error");
+        return;
+      }
+      logEvent("Retrieving exchange session...");
+      const result = await getExchangeSession(exchangeSessionId);
+      if (!result.success || !result.resource) {
+        const msg = result.success ? "Failed to get payment session" : (result.message ?? "Failed to get payment session");
+        logEvent(msg, "error");
+        return;
+      }
+      setPaymentSession(result.resource);
+      logEvent("Session ready.");
+      await loadFlow(result.resource);
     })();
-  }, [formReady, paymentSession, loadFlow, logEvent]);
+  }, [formReady, paymentSession, storedCustomerId, loadFlow, logEvent]);
 
   /**
    * Dynamically loads a JavaScript file from a CDN.
@@ -231,10 +266,10 @@ export default function AddCardPage() {
   }
 
   const steps = [
-    { label: "Create payment session", owner: "Checkout API" },
+    { label: "Create exchange session", owner: "Dwolla API" },
     { label: "Capture card in Flow", owner: "Checkout Flow" },
-    { label: "Exchange payment for card token", owner: "Checkout API" },
-    { label: "Create Dwolla card funding source", owner: "Dwolla API" },
+    { label: "Create Dwolla exchange", owner: "Dwolla API" },
+    { label: "Create Dwolla funding source", owner: "Dwolla API" },
     { label: "Send payout", owner: "Dwolla API" },
   ];
 
@@ -246,7 +281,7 @@ export default function AddCardPage() {
     if (status?.includes("Sending payout")) return 4;
     if (cardFundingSource || status?.includes("Card funding source created")) return 3;
     if (status?.includes("Creating Dwolla card funding source")) return 3;
-    if (status?.includes("Fetching card token")) return 2;
+    if (status?.includes("Creating Dwolla exchange")) return 2;
     if (paymentSession || status?.includes("Session ready")) return 1;
     return 0;
   };
@@ -392,6 +427,32 @@ export default function AddCardPage() {
               />
 
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Cardholder name
+              </Typography>
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField
+                    label="First name"
+                    name="firstName"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    fullWidth
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField
+                    label="Last name"
+                    name="lastName"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    fullWidth
+                  />
+                </Grid>
+              </Grid>
+
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                 Billing address
               </Typography>
               <TextField
@@ -459,6 +520,8 @@ export default function AddCardPage() {
                 disabled={
                   !amount ||
                   Number(amount) <= 0 ||
+                  !firstName?.trim() ||
+                  !lastName?.trim() ||
                   Object.values(billing).some((v) => !v) ||
                   formReady
                 }

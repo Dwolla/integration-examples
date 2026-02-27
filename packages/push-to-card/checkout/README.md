@@ -1,6 +1,6 @@
-# Dwolla and Checkout.com - Push to Card
+# Dwolla Push to Card
 
-This example application, built using [Next.js](https://nextjs.org/), demonstrates how to integrate Dwolla's **Push to Card** feature with Checkout.com Flow. The app showcases how to securely capture debit card information using Checkout.com's PCI-compliant Flow component, create a card funding source in Dwolla, and initiate instant payouts directly to the cardholder's debit card.
+This example application, built using [Next.js](https://nextjs.org/), demonstrates how to integrate Dwolla's **Push to Card** feature. The app shows how to create a Customer in Dwolla, obtain a payment session via Dwolla's API for secure card capture, collect card details using the Flow component powered by Checkout.com, create a card funding source in Dwolla, and initiate instant payouts to the cardholder's debit card.
 
 **Note**: Since this project depends on shared dependencies, please ensure that you have executed `pnpm install` in the root directory (`integration-examples`) before continuing.
 
@@ -9,10 +9,10 @@ This example application, built using [Next.js](https://nextjs.org/), demonstrat
 This sample application demonstrates the complete Push to Card integration flow:
 
 1. **Customer Creation**: Create an unverified Customer in Dwolla to represent the payout recipient
-2. **Checkout.com Payment Session**: Generate a server-side payment session for secure card capture
-3. **Flow Component Integration**: Mount Checkout.com's Flow component to securely collect card details (client-side)
-4. **Card Token Retrieval**: Exchange the payment ID for a card token (`src_...`) from Checkout.com
-5. **Card Funding Source**: Create a Dwolla card funding source using the Checkout.com card token
+2. **Payment Session (Dwolla)**: Create an exchange session via Dwolla's API to obtain payment session data for card capture
+3. **Flow Component**: Mount the Flow component to securely collect card details (client-side; PCI-compliant)
+4. **Exchange Creation**: Exchange the payment ID from Flow for an Exchange via Dwolla's API
+5. **Card Funding Source**: Create a Dwolla card funding source using the exchange
 6. **Push to Card Transfer**: Initiate an instant payout from your settlement account to the card
 
 ## Prerequisites
@@ -33,19 +33,16 @@ Before running this application, ensure you have the following:
 
 1. **Checkout.com Account**: Sign up for a [Checkout.com Sandbox Account](https://www.checkout.com/get-test-account) to access their testing environment.
 
-2. **API Credentials**: Obtain your Checkout.com credentials from the [Checkout.com Sandbox Dashboard](https://dashboard.sandbox.checkout.com/):
-   - **Public Key** (`pk_sbox_...`) - Used client-side to initialize Flow
-   - **Secret Key** (`sk_sbox_...`) - Used server-side for API requests
-   - **Client ID** (`cli_...`) - Used to determine the correct API endpoint
-   - **Processing Channel ID** (`pc_...`) - Required for payment session creation
+The only third-party requirement for card capture is the **Flow** component and its public key:
 
-3. **API Access**: If you need help obtaining these credentials or configuring your Checkout.com account, contact Checkout.com Support.
+1. **Public Key**: Obtain the **Public Key** from the provider's dashboard (sandbox: `pk_sbox_...`, production: `pk_...`). This is used client-side to initialize the Flow component.
+2. **Environment**: Set `NEXT_PUBLIC_CKO_ENV` to `sandbox` or `production` to match the key.
 
 ## Setup
 
 1. **Install Root Dependencies**: From the repository root directory (`integration-examples`), run `pnpm install` to install shared dependencies.
 
-2. **Configure Environment Variables**: Rename `.env.local.example` to `.env.local` and fill in your Dwolla and Checkout.com credentials. See [ENVIRONMENT.md](ENVIRONMENT.md) for detailed descriptions of each required variable.
+2. **Configure Environment Variables**: Rename `.env.local.example` to `.env.local` and fill in your Dwolla credentials and the Flow component public key.
 
 3. **Install Package Dependencies**: Navigate to this package directory and run `pnpm install` to download all necessary dependencies.
 
@@ -54,12 +51,12 @@ Before running this application, ensure you have the following:
 5. **Test the Flow**: Follow the UI steps in the application:
    - **Step 1**: Enter customer details (name and email) to create a Dwolla Customer
    - **Step 2**: Complete payment details (amount and billing address)
-   - **Step 3**: Enter card information in the Checkout.com Flow component
+   - **Step 3**: Enter card information in the Flow component
    - **Step 4**: Submit to create the card funding source and initiate the payout
 
-## Using Checkout.com Test Cards
+## Test Cards (Sandbox)
 
-When using Checkout.com Flow in the Sandbox environment, you can use the following test card numbers to simulate various scenarios:
+When using the Flow component in the Sandbox environment, you can use test card numbers to simulate card capture:
 
 ### Successful Card Capture
 
@@ -75,15 +72,16 @@ For any test card, use:
 - **CVV**: Any 3 digits (e.g., 100)
 - **Cardholder Name**: Any name
 
-For more test card scenarios and additional test credentials, refer to the [Checkout.com Card payout test cards](https://www.checkout.com/docs/developer-resources/testing/test-cards#Card_payout_test_cards).
+For more test card scenarios, refer to the [Card payout test cards](https://www.checkout.com/docs/developer-resources/testing/test-cards#Card_payout_test_cards) documentation.
 
 ## Key Features
 
 - **Customer Management**: Create unverified Customers in Dwolla using the Dwolla API
-- **Secure Card Capture**: Integrate Checkout.com's PCI-compliant Flow component for secure card data collection
-- **Card Tokenization**: Exchange Checkout.com payment IDs for reusable card tokens
-- **Push to Card Integration**: Create card funding sources and initiate instant payouts to debit cards
-- **Error Handling**: Comprehensive error handling for both Dwolla and Checkout.com API interactions
+- **Payment Sessions via Dwolla**: Obtain payment session data from Dwolla's exchange session API for card capture
+- **Secure Card Capture**: Use the Flow component for PCI-compliant card data collection (client-side)
+- **Exchange creation**: Exchange payment ID for an Exchange resource via Dwolla's API
+- **Push to Card**: Create card funding sources and initiate instant payouts to debit cards
+- **Error Handling**: Error handling for Dwolla API interactions
 - **Real-time Status Updates**: Track the progress of card capture, funding source creation, and transfer initiation
 
 ## Project Structure
@@ -102,15 +100,14 @@ src/
 │   ├── layout.tsx              # Root layout with MUI theme
 │   └── page.tsx                # Landing page with navigation
 ├── integrations/
-│   ├── dwolla.ts              # Dwolla API integration functions
-│   ├── checkout.ts            # Checkout.com API integration functions
-│   └── index.ts               # Shared integration utilities
+│   ├── dwolla.ts               # Dwolla API integration
+│   └── index.ts                # Shared integration utilities
 ├── hooks/
-│   └── useNetworkAlert.ts     # Custom hook for network state management
+│   └── useNetworkAlert.ts      # Custom hook for network state management
 └── utils/
-    ├── equalsIgnoreCase.ts    # String comparison utility
-    ├── getBaseUrl.ts          # URL helper for API requests
-    ├── getMissingKeys.ts      # Form validation utility
-    ├── uuidFromUrl.ts         # Extract UUID from resource URLs
-    └── index.ts               # Utility exports
+    ├── equalsIgnoreCase.ts     # String comparison utility
+    ├── getBaseUrl.ts           # URL helper for API requests
+    ├── getMissingKeys.ts       # Form validation utility
+    ├── uuidFromUrl.ts          # Extract UUID from resource URLs
+    └── index.ts                # Utility exports
 ```

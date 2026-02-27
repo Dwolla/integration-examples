@@ -27,8 +27,7 @@
     "@mui/icons-material": "^7.3.7",
     "@mui/lab": "6.0.0-beta.16",
     "@mui/material": "^6.1.8",
-    "checkout-sdk-node": "^3.0.3",
-    "dwolla": "^1.0.2",
+    "dwolla": "^1.1.1",
     "next": "^15.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
