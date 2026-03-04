@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { Box, Card, CardContent, CardHeader, TextField, Alert, Typography, IconButton, Tooltip, Stepper, Step, StepLabel, Chip, Table, TableBody, TableRow, TableCell, Divider, Button } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Grid from "@mui/material/Grid2";
 import {
   type ExternalProviderSessionData,
@@ -46,6 +47,19 @@ declare global {
  * It handles secure card capture without sensitive data touching our servers.
  * 
  */
+
+/**
+ * Wrapper that strips the `last` prop before rendering Box.
+ * A parent (e.g. layout or Stepper) may inject `last` for styling; Box forwards unknown props
+ * to the DOM, which triggers "Received `true` for a non-boolean attribute `last`" since
+ * `last` is not a valid HTML attribute. We strip it here so it never reaches the DOM.
+ */
+function StripLastBox(props: React.ComponentProps<typeof Box> & { last?: boolean }) {
+  const { last: _last, ...rest } = props;
+  void _last;
+  return <Box {...rest} />;
+}
+
 export default function AddCardPage() {
   // Payment session from Dwolla exchange-session (externalProviderSessionData) for Flow
   const [paymentSession, setPaymentSession] = useState<ExternalProviderSessionData | null>(null);
@@ -341,6 +355,17 @@ export default function AddCardPage() {
           </Step>
         ))}
       </Stepper>
+      {(events.length > 0 || cardFundingSource || transfer) && (
+        <StripLastBox sx={{ mb: 2 }}>
+          <Chip
+            icon={<KeyboardArrowDownIcon />}
+            label={events.length > 0 ? `View events log (${events.length})` : "View events log"}
+            onClick={() => document.getElementById("events-log")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            variant="outlined"
+            sx={{ cursor: "pointer" }}
+          />
+        </StripLastBox>
+      )}
       <Box sx={{ position: "relative" }}>
         {formReady && (
           <Box
@@ -413,6 +438,11 @@ export default function AddCardPage() {
         <Card sx={{ padding: 3 }}>
           <CardHeader title="Payment details" />
           <CardContent>
+            <Alert severity="info" sx={{ mb: 2 }}>
+              <Typography variant="body2">
+                The exchange session (step 1) only needs your Dwolla customer. Amount, cardholder name, and billing address are used in <strong>later steps</strong> — funding source creation and payout - not for creating the session.
+              </Typography>
+            </Alert>
             <Box sx={{ mt: 1 }}>
               <TextField
                 type="number"
@@ -570,7 +600,7 @@ export default function AddCardPage() {
 
       {/* Events log */}
       {(events.length > 0 || cardFundingSource || transfer) && (
-        <Card sx={{ p: 3, mt: 2 }}>
+        <Card id="events-log" sx={{ p: 3, mt: 2 }} component="section">
           <Typography variant="h6" sx={{ mb: 2 }}>
             Events log
           </Typography>

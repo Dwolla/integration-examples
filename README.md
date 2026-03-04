@@ -34,9 +34,9 @@ pnpm install
 
 | Goal | Examples |
 | --- | --- |
-| Add a bank funding source (Open Banking) | <ul><li>[Plaid](packages/open-banking/plaid)</li><li>[MX](packages/open-banking/mx)</li></ul> |
-| Add a bank funding source (Secure Exchange / tokenized) | <ul><li>[Plaid](packages/secure-token-exchange/plaid) </li><li> [MX](packages/secure-token-exchange/mx) </li><li> [Mastercard](packages/secure-token-exchange/mastercard) </li><li> [Flinks](packages/secure-token-exchange/flinks) </li></ul> |
-| Add a card funding source & enable Push to Card payouts | <ul><li>[Checkout.com Flow](packages/push-to-card/checkout)</li></ul> |
+| Add a bank funding source (Open Banking) | <ul><li>[Plaid](packages/open-banking/plaid/README.md)</li><li>[MX](packages/open-banking/mx/README.md)</li></ul> |
+| Add a bank funding source (Secure Exchange / tokenized) | <ul><li>[Plaid](packages/secure-token-exchange/plaid/README.md)</li><li>[MX](packages/secure-token-exchange/mx/README.md)</li><li>[Mastercard](packages/secure-token-exchange/mastercard/README.md)</li><li>[Flinks](packages/secure-token-exchange/flinks/README.md)</li></ul> |
+| Add a card funding source & enable Push to Card payouts | <ul><li>[Checkout.com Flow](packages/push-to-card/checkout/README.md)</li></ul> |
 
 ## Architecture
 
