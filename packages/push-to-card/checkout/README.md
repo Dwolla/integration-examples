@@ -49,10 +49,9 @@ The only third-party requirement for card capture is the **Flow** component and 
 4. **Start the Development Server**: Run `pnpm dev` to start the Next.js application at `http://localhost:3000`.
 
 5. **Test the Flow**: Follow the UI steps in the application:
-   - **Step 1**: Enter customer details (name and email) to create a Dwolla Customer
-   - **Step 2**: Complete payment details (amount and billing address)
-   - **Step 3**: Enter card information in the Flow component
-   - **Step 4**: Submit to create the card funding source and initiate the payout
+   - **Step 1 – Create customer**: Enter name and email to create a Dwolla Customer, then continue to Add a debit card.
+   - **Step 2 – Add a debit card**: Click Start to create an exchange session and load the card capture form. Enter your card in the Flow component; then enter cardholder name and billing address and click “Create funding source.”
+   - **Step 3 – Send a payout**: Go to Send a payout, enter the amount, and click “Send payout.” Settlement and card resolution run in the background; the events log shows API activity.
 
 ## Test Cards (Sandbox)
 
@@ -89,14 +88,12 @@ For more test card scenarios, refer to the [Card payout test cards](https://www.
 ```
 src/
 ├── app/
-│   ├── create-customer/         # Customer creation form and logic
+│   ├── add-card/               # Add a debit card: exchange session, Flow, Exchange, funding source
 │   │   └── page.tsx
-│   ├── send-payout/            # Card capture and payout initiation
-│   │   ├── page.tsx            # Main payout page with Flow component
-│   │   ├── success/            # Success callback page
-│   │   │   └── page.tsx
-│   │   └── failure/            # Failure callback page
-│   │       └── page.tsx
+│   ├── create-customer/        # Customer creation form and logic
+│   │   └── page.tsx
+│   ├── send-payout/            # Send a payout
+│   │   └── page.tsx
 │   ├── layout.tsx              # Root layout with MUI theme
 │   └── page.tsx                # Landing page with navigation
 ├── integrations/

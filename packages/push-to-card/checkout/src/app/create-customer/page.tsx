@@ -13,10 +13,10 @@ import { createCustomer } from "../../integrations/dwolla";
 type FormState = Partial<CreateCustomerOptions>;
 
 /**
- * Create Customer Component
+ * Create Customer page.
  *
- * Renders a form, allowing users to enter name and email to create a Dwolla Customer account.
- * This component manages widget setup, event handling, and lifecycle operations.
+ * Integration step: Call Dwolla API to create a customer (firstName, lastName, email).
+ * Store the returned customer ID (e.g. in sessionStorage) and redirect to add-card so the user can add a debit card.
  */
 export default function Page() {
     const router = useRouter();
@@ -87,7 +87,7 @@ export default function Page() {
 
         // After customer creation, move to the Add Card flow, which will create a Checkout
         // payment session and mount Flow to capture the card.
-        router.push("/send-payout");
+        router.push("/add-card");
     };
 
     return (
