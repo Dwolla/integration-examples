@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": "Dwolla, Inc.",
   "engines": {
-    "node": ">=21.7.0"
+    "node": "^22.23.4 || ^24.22.1 || >=26.12.1"
   },
   "scripts": {
     "dev": "next dev",

@@ -12,7 +12,8 @@ Each application uses Next.js/React and TypeScript, showcasing recommended patte
 
 Before getting started, ensure you have:
 
-- **Node.js 18+** and **pnpm** installed
+- **Node.js** on a supported and patched release line: **v22.23.4+**, **v24.22.1+**, or **v26.12.1+** (see the [Node.js October 2026 security releases](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)). Node.js 18.x and 20.x are end-of-life and no longer receive security fixes.
+- **pnpm** installed
 - A [Dwolla Sandbox account](https://accounts-sandbox.dwolla.com/sign-up)
 - **API credentials** from your chosen integration partner (Plaid, MX, Mastercard, Checkout.com, or Flinks)
 
